@@ -5,8 +5,9 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
-import { Loader2, LogIn, Briefcase } from 'lucide-react';
+import { Loader2, LogIn } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function HomePage() {
   const { user, loading } = useAuth();
@@ -28,7 +29,13 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-background p-8 text-center">
-      <Briefcase className="h-24 w-24 text-primary mb-6" />
+      <Image 
+        src="/logo.png" 
+        alt="Walking The Sahel Logo" 
+        width={150} 
+        height={150} 
+        className="mb-6 rounded-full" 
+      />
       <h1 className="font-headline text-6xl md:text-7xl font-bold text-primary mb-4">
         Walking The Sahel
       </h1>

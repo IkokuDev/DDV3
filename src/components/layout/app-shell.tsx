@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { useCart } from '@/contexts/cart-context'; // Import useCart
 import { Toaster } from "@/components/ui/toaster";
+import Image from 'next/image';
 import {
   Sidebar,
   SidebarContent,
@@ -35,7 +36,6 @@ import {
   MessageSquare,
   LayoutDashboard,
   Settings,
-  Briefcase,
   Store,
   Compass,
 } from 'lucide-react';
@@ -58,7 +58,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const navItems: NavItem[] = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['buyer', 'supplier', 'driver'] },
-    { href: '/marketplace', label: 'Marketplace', icon: Store, roles: ['buyer', 'supplier'] }, // Updated roles
+    { href: '/marketplace', label: 'Marketplace', icon: Store, roles: ['buyer', 'supplier'] },
     { href: '/cart', label: 'My Cart', icon: ShoppingCart, roles: ['buyer'], badgeGetter: getCartItemCount }, // Cart Nav Item
     { href: '/my-products', label: 'My Products', icon: Package, roles: ['supplier'] },
     { href: '/my-orders', label: 'My Orders', icon: ShoppingCart, roles: ['buyer'] }, // My Orders can also use ShoppingCart
@@ -98,9 +98,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen w-full">
       <Sidebar collapsible="icon" variant="sidebar" side="left">
         <SidebarHeader className="items-center justify-between">
-            <Link href="/dashboard" className="flex items-center gap-2 font-headline text-lg font-semibold text-primary group-data-[collapsible=icon]:hidden">
-              <Briefcase className="h-6 w-6" />
-              <span>Walking The Sahel</span>
+            <Link href="/dashboard" className="flex items-center gap-2 text-primary">
+              <Image src="/logo.png" alt="Walking The Sahel Logo" width={32} height={32} className="h-8 w-8 rounded-full" />
+              <span className="font-headline text-lg font-semibold group-data-[collapsible=icon]:hidden">Walking The Sahel</span>
             </Link>
             <div className="group-data-[collapsible=icon]:hidden">
               <SidebarTrigger />
