@@ -51,7 +51,7 @@ export function ProductTable({ products, onEdit, onDelete }: ProductTableProps) 
                   />
                 </TableCell>
                 <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell>${product.price.toFixed(2)}</TableCell>
+                <TableCell>₦{product.price.toFixed(2)}</TableCell>
                 <TableCell>{product.category || 'N/A'}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>

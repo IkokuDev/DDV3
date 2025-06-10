@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingCart, DollarSign } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react'; // Removed DollarSign as we'll use text NGN
 
 interface ProductCardProps {
   product: Product;
@@ -34,9 +34,8 @@ export function ProductCard({ product }: ProductCardProps) {
         </CardContent>
       </Link>
       <CardFooter className="p-4 flex justify-between items-center border-t bg-card">
-        <div className="flex items-center text-lg font-semibold text-primary">
-          <DollarSign className="h-5 w-5 mr-1" />
-          {product.price.toFixed(2)}
+        <div className="text-lg font-semibold text-primary">
+          ₦{product.price.toFixed(2)}
         </div>
         <Button size="sm" variant="default" onClick={(e) => {
           e.stopPropagation(); 

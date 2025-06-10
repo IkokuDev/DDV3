@@ -3,7 +3,7 @@ import type { Order, OrderStatus } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Hash, DollarSign, Package, Truck, Info } from 'lucide-react';
+import { Calendar, Package, Truck, Info } from 'lucide-react'; // Removed DollarSign
 
 interface OrderListItemProps {
   order: Order;
@@ -57,8 +57,9 @@ export function OrderListItem({ order }: OrderListItemProps) {
           <span>{order.items.reduce((acc, item) => acc + item.quantity, 0)} items</span>
         </div>
         <div className="flex items-center text-sm">
-          <DollarSign className="mr-2 h-4 w-4 text-primary" />
-          <span>Total: ${order.totalAmount.toFixed(2)}</span>
+          {/* <DollarSign className="mr-2 h-4 w-4 text-primary" /> */}
+          <span className="font-semibold text-primary mr-1">₦</span>
+          <span>Total: {order.totalAmount.toFixed(2)}</span>
         </div>
         <div className="text-sm">
           <p className="font-medium text-foreground/80">Delivery Address:</p>

@@ -4,132 +4,132 @@ import type { Product } from '@/lib/types';
 export const mockProducts: Product[] = [
   {
     id: '1',
-    name: 'Artisan Coffee Beans',
-    description: 'Fair-trade, single-origin coffee beans from the Sahel region. Roasted to perfection for a rich, aromatic brew.',
-    price: 15.99,
+    name: 'Premium Arabica Coffee Beans',
+    description: 'Fair-trade, single-origin Arabica coffee beans from highland farms. Roasted for a rich, aromatic brew.',
+    price: 7500.00, // Example price in NGN
     supplier: 'Sahel Roasters',
     category: 'Agric/Livestock',
     imageUrl: 'https://placehold.co/600x400.png',
     dimensions: '20cm x 10cm x 5cm',
     weight: '500g',
-    shippingCost: 5.00,
+    shippingCost: 500.00,
     imageAiHint: 'coffee beans'
   },
   {
     id: '2',
-    name: 'Woven Reed Mats',
-    description: 'Strong and versatile woven reed mats, suitable for flooring or light construction applications in traditional Sahel architecture.',
-    price: 25.00,
+    name: 'Woven Palm Leaf Mats',
+    description: 'Durable and versatile woven palm leaf mats, suitable for flooring or traditional roofing. Handcrafted by local artisans.',
+    price: 3500.00,
     supplier: 'Artisans United',
-    category: 'Building Materials',
+    category: 'Building Materials', // Could also be raw material if for further processing
     imageUrl: 'https://placehold.co/600x400.png',
     dimensions: '2m x 1m roll',
     weight: '1.5kg',
-    shippingCost: 10.00,
+    shippingCost: 1000.00,
     imageAiHint: 'woven mats'
   },
   {
     id: '3',
-    name: 'Raw Shea Butter',
-    description: 'Pure, unrefined shea butter, ethically sourced. Excellent for skincare, soap making, or as a natural conditioning agent.',
-    price: 18.50, // Adjusted price
+    name: 'Grade A Shea Butter',
+    description: 'Pure, unrefined Grade A shea butter, ethically sourced. Excellent for cosmetics, traditional medicine, and soap making.',
+    price: 4200.00,
     supplier: 'Naturelle Beauty',
     category: 'Raw Materials',
     imageUrl: 'https://placehold.co/600x400.png',
     dimensions: '15cm x 10cm x 10cm block',
     weight: '1kg',
-    shippingCost: 6.00,
+    shippingCost: 600.00,
     imageAiHint: 'shea butter'
   },
   {
     id: '4',
-    name: 'Dried Hibiscus Flowers',
-    description: 'Bulk dried hibiscus flowers, perfect for producing refreshing bissap juice, teas, or natural food coloring.',
-    price: 12.00,
+    name: 'Dried Hibiscus (Zobo Leaves)',
+    description: 'Bulk dried hibiscus calyces (Zobo leaves), perfect for producing refreshing Zobo drink, teas, or natural food coloring.',
+    price: 2500.00,
     supplier: 'Sahel Flavors',
     category: 'Agric/Livestock',
     imageUrl: 'https://placehold.co/600x400.png',
     dimensions: '30cm x 20cm x 10cm bag',
     weight: '500g',
-    shippingCost: 4.50,
+    shippingCost: 450.00,
     imageAiHint: 'hibiscus flowers'
   },
   {
     id: '5',
-    name: 'Charcoal Briquettes',
-    description: 'Efficient and long-burning charcoal briquettes made from sustainable sources. Ideal for cooking and heating purposes.',
-    price: 22.00, // Adjusted price
+    name: 'Hardwood Charcoal Briquettes',
+    description: 'Efficient and long-burning hardwood charcoal briquettes. Ideal for cooking and traditional smithing.',
+    price: 5500.00,
     supplier: 'EcoFuel Sahel',
     category: 'Fuel Options',
     imageUrl: 'https://placehold.co/600x400.png',
     dimensions: '40cm x 30cm x 20cm bag',
     weight: '5kg',
-    shippingCost: 8.00,
+    shippingCost: 800.00,
     imageAiHint: 'charcoal briquettes'
   },
   {
     id: '6',
-    name: 'Construction Sand',
-    description: 'High-quality, clean construction sand, suitable for mortar, concrete, and various building projects. Sold per cubic meter.',
-    price: 50.00, // Adjusted price for a larger unit
+    name: 'Laterite Soil (Red Earth)',
+    description: 'High-quality laterite soil, rich in iron and aluminum, suitable for traditional rammed earth construction and road surfacing.',
+    price: 15000.00, // Price per truckload/cubic meter
     supplier: 'Sahel Sands Co.',
     category: 'Building Materials',
     imageUrl: 'https://placehold.co/600x400.png',
     dimensions: 'Per cubic meter',
     weight: 'Approx 1.5 tons/m³',
-    shippingCost: 25.00, // Higher due to weight
-    imageAiHint: 'construction sand'
+    shippingCost: 5000.00,
+    imageAiHint: 'laterite soil'
   },
   {
     id: '7',
-    name: 'Acacia Gum Lumps',
-    description: 'Natural, raw acacia gum (gum arabic) lumps. Widely used in food, pharmaceuticals, and various industrial applications.',
-    price: 35.00,
+    name: 'Gum Arabic (Acacia Senegal)',
+    description: 'Natural, raw gum arabic lumps from Acacia Senegal trees. Widely used as a stabilizer in food, pharmaceuticals, and traditional inks.',
+    price: 8000.00,
     supplier: 'Sahel Gums',
     category: 'Raw Materials',
     imageUrl: 'https://placehold.co/600x400.png',
     dimensions: '20cm x 15cm x 10cm bag',
     weight: '1kg',
-    shippingCost: 7.00,
+    shippingCost: 700.00,
     imageAiHint: 'acacia gum'
   },
   {
     id: '8',
-    name: 'Compressed Earth Blocks',
-    description: 'Eco-friendly compressed earth blocks (CEB) for sustainable construction. Strong, durable, and provides excellent thermal mass.',
-    price: 2.50, // Price per block
+    name: 'Adobe Bricks (Sun-Dried)',
+    description: 'Traditional sun-dried adobe bricks, made from local clay and organic binders. Excellent for sustainable and thermal-efficient walls.',
+    price: 150.00, // Price per brick
     supplier: 'TerraBuild Sahel',
     category: 'Building Materials',
     imageUrl: 'https://placehold.co/600x400.png',
-    dimensions: '30cm x 15cm x 10cm per block',
-    weight: '8kg per block',
-    shippingCost: 1.00, // Per block, bulk shipping varies
-    imageAiHint: 'earth blocks'
+    dimensions: '30cm x 15cm x 10cm per brick',
+    weight: '6kg per brick',
+    shippingCost: 50.00, // Per brick, bulk shipping varies
+    imageAiHint: 'adobe bricks'
   },
   {
     id: '9',
-    name: 'Groundnut Harvest',
-    description: 'Freshly harvested groundnuts (peanuts), available shelled or unshelled. A staple crop in the Sahel, rich in protein and oil.',
-    price: 10.50, // Price per kg
+    name: 'Millet Grain (Sorghum)',
+    description: 'Whole millet grain (sorghum), a drought-resistant staple crop in the Sahel. Nutritious and versatile for porridges, flour, and animal feed.',
+    price: 1200.00, // Price per kg
     supplier: 'FarmFresh Sahel',
     category: 'Agric/Livestock',
     imageUrl: 'https://placehold.co/600x400.png',
     dimensions: 'Sold per kg',
     weight: '1kg',
-    shippingCost: 3.50,
-    imageAiHint: 'groundnuts peanuts'
+    shippingCost: 350.00,
+    imageAiHint: 'millet grain'
   },
   {
     id: '10',
-    name: 'Solar Lanterns',
-    description: 'Durable and efficient solar-powered lanterns, providing reliable off-grid lighting. Essential for areas with limited electricity access.',
-    price: 18.00,
-    supplier: 'Sahel Solar Solutions',
-    category: 'Fuel Options', // Considered as an alternative energy/lighting solution
+    name: 'Cow Dung Fuel Cakes',
+    description: 'Dried cow dung cakes, a traditional and renewable fuel source for cooking in many Sahelian communities. Sold in stacks.',
+    price: 500.00, // Price per stack
+    supplier: 'Rural Energy Sources',
+    category: 'Fuel Options',
     imageUrl: 'https://placehold.co/600x400.png',
-    dimensions: '15cm x 10cm x 10cm',
-    weight: '300g',
-    shippingCost: 5.00,
-    imageAiHint: 'solar lantern'
+    dimensions: 'Approx. 30cm diameter per cake',
+    weight: 'Varies per stack',
+    shippingCost: 200.00,
+    imageAiHint: 'dung cakes'
   }
 ];

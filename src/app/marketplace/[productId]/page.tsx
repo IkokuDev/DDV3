@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { mockProducts } from '@/lib/mock-data';
 import type { Product } from '@/lib/types';
-import { ShoppingCart, DollarSign, ArrowLeft, Loader2, AlertTriangle, Box, Weight as WeightIcon, Truck as ShippingIcon } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Loader2, AlertTriangle, Box, Weight as WeightIcon, Truck as ShippingIcon } from 'lucide-react';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -115,7 +115,7 @@ export default function ProductDetailPage() {
               <div className="flex items-center">
                 <ShippingIcon className="h-5 w-5 mr-3 text-primary" />
                 <span className="font-medium">Shipping Cost:</span>
-                <span className="ml-2 text-muted-foreground">${product.shippingCost.toFixed(2)}</span>
+                <span className="ml-2 text-muted-foreground">₦{product.shippingCost.toFixed(2)}</span>
               </div>
             </CardContent>
           </Card>
@@ -123,9 +123,8 @@ export default function ProductDetailPage() {
           <Card className="shadow-lg">
             <CardContent className="pt-6">
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div className="text-3xl font-bold text-primary flex items-center">
-                        <DollarSign className="h-7 w-7 mr-1" />
-                        {product.price.toFixed(2)}
+                    <div className="text-3xl font-bold text-primary">
+                        ₦{product.price.toFixed(2)}
                     </div>
                     <Button size="lg" className="w-full sm:w-auto text-lg">
                         <ShoppingCart className="mr-2 h-5 w-5" />
