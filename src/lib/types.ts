@@ -68,3 +68,14 @@ export interface ForumComment {
   createdAt: string;
 }
 
+export interface CartItem {
+  id: string; // Product ID
+  name: string;
+  price: number;
+  imageUrl?: string;
+  quantity: number;
+  imageAiHint?: string;
+  // Add other relevant product fields if needed for display in cart
+  // e.g. supplier, category, if you want to show them directly in the cart line item
+}
+

@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/contexts/auth-context';
+import { CartProvider } from '@/contexts/cart-context'; // Import CartProvider
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -26,10 +27,12 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <AuthProvider>
-          <SidebarProvider>
-            {children}
-            <Toaster />
-          </SidebarProvider>
+          <CartProvider> {/* Wrap with CartProvider */}
+            <SidebarProvider>
+              {children}
+              <Toaster />
+            </SidebarProvider>
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

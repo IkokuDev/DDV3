@@ -1,4 +1,6 @@
 
+"use client";
+
 import type { Product } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,12 +8,20 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useCart } from '@/contexts/cart-context'; // Import useCart
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { addToCart } = useCart(); // Use cart context
+
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation(); // Prevent link navigation if button is inside Link
+    addToCart(product);
+  };
+
   return (
     <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full group">
       <Link href={`/marketplace/${product.id}`} className="flex flex-col flex-grow cursor-pointer">
@@ -38,11 +48,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="text-lg font-semibold text-primary">
           ₦{product.price.toFixed(2)}
         </div>
-        <Button size="sm" variant="default" onClick={(e) => {
-          e.stopPropagation(); 
-          // Add to cart logic here - for now, just log
-          console.log(`Add ${product.name} to cart`);
-          }}>
+        <Button size="sm" variant="default" onClick={handleAddToCart}>
           <ShoppingCart className="mr-2 h-4 w-4" />
           Add to Cart
         </Button>

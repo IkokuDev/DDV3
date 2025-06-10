@@ -13,26 +13,27 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { mockProducts } from '@/lib/mock-data';
 import type { Product } from '@/lib/types';
+import { useCart } from '@/contexts/cart-context'; // Import useCart
 import { ShoppingCart, ArrowLeft, Loader2, AlertTriangle, Box, Weight as WeightIcon, Truck as ShippingIcon } from 'lucide-react';
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const productId = params.productId as string;
+  const { addToCart } = useCart(); // Use cart context
   
   const [product, setProduct] = useState<Product | undefined | null>(undefined); // undefined: loading, null: not found
 
   useEffect(() => {
     if (productId) {
-      // In a real app, you would fetch product data from an API
       const foundProduct = mockProducts.find(p => p.id === productId);
-      setProduct(foundProduct || null); // Set to null if not found
+      setProduct(foundProduct || null);
     } else {
-      setProduct(null); // No productId, so not found
+      setProduct(null);
     }
   }, [productId]);
 
-  if (product === undefined) { // Loading state
+  if (product === undefined) {
     return (
       <AppShell>
         <PageHeader title="Loading Product..." />
@@ -43,7 +44,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  if (product === null) { // Not found state
+  if (product === null) {
     return (
       <AppShell>
         <PageHeader title="Product Not Found" description="The product you are looking for could not be found." />
@@ -57,6 +58,10 @@ export default function ProductDetailPage() {
       </AppShell>
     );
   }
+
+  const handleAddToCart = () => {
+    addToCart(product);
+  };
 
   return (
     <AppShell>
@@ -126,7 +131,7 @@ export default function ProductDetailPage() {
                     <div className="text-3xl font-bold text-primary">
                         ₦{product.price.toFixed(2)}
                     </div>
-                    <Button size="lg" className="w-full sm:w-auto text-lg">
+                    <Button size="lg" className="w-full sm:w-auto text-lg" onClick={handleAddToCart}>
                         <ShoppingCart className="mr-2 h-5 w-5" />
                         Add to Cart
                     </Button>
