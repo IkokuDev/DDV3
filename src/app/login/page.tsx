@@ -9,9 +9,9 @@ export default function LoginPage() {
         <Image 
           src="/logo.png" 
           alt="Walking The Sahel Logo" 
-          width={120} 
-          height={120} 
-          className="mx-auto mb-4 rounded-full"
+          width={156} 
+          height={156} 
+          className="mx-auto mb-4"
         />
         <h1 className="font-headline text-4xl font-bold text-primary">Walking The Sahel</h1>
       </div>

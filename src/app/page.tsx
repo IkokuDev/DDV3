@@ -32,9 +32,9 @@ export default function HomePage() {
       <Image 
         src="/logo.png" 
         alt="Walking The Sahel Logo" 
-        width={150} 
-        height={150} 
-        className="mb-6 rounded-full" 
+        width={195} 
+        height={195} 
+        className="mb-6" 
       />
       <h1 className="font-headline text-6xl md:text-7xl font-bold text-primary mb-4">
         Walking The Sahel

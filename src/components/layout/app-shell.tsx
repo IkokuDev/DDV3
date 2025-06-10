@@ -99,7 +99,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Sidebar collapsible="icon" variant="sidebar" side="left">
         <SidebarHeader className="items-center justify-between">
             <Link href="/dashboard" className="flex items-center gap-2 text-primary">
-              <Image src="/logo.png" alt="Walking The Sahel Logo" width={32} height={32} className="h-8 w-8 rounded-full" />
+              <Image src="/logo.png" alt="Walking The Sahel Logo" width={40} height={40} className="h-10 w-10" />
               <span className="font-headline text-lg font-semibold group-data-[collapsible=icon]:hidden">Walking The Sahel</span>
             </Link>
             <div className="group-data-[collapsible=icon]:hidden">
