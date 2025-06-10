@@ -7,9 +7,11 @@ import { MessageSquare, ThumbsUp, Calendar } from 'lucide-react';
 
 interface ForumPostCardProps {
   post: ForumPost;
+  onLikePost: (postId: string) => void;
+  onIncrementCommentCount: (postId: string) => void;
 }
 
-export function ForumPostCard({ post }: ForumPostCardProps) {
+export function ForumPostCard({ post, onLikePost, onIncrementCommentCount }: ForumPostCardProps) {
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase();
 
   return (
@@ -34,11 +36,11 @@ export function ForumPostCard({ post }: ForumPostCardProps) {
       </CardContent>
       <CardFooter className="flex justify-between items-center text-sm text-muted-foreground">
         <div className="flex space-x-4">
-          <Button variant="ghost" size="sm" className="flex items-center">
-            <ThumbsUp className="mr-1 h-4 w-4" /> Like
+          <Button variant="ghost" size="sm" className="flex items-center" onClick={() => onLikePost(post.id)}>
+            <ThumbsUp className="mr-1 h-4 w-4" /> {post.likes} Like{post.likes !== 1 ? 's' : ''}
           </Button>
-          <Button variant="ghost" size="sm" className="flex items-center">
-            <MessageSquare className="mr-1 h-4 w-4" /> {post.commentsCount} Comments
+          <Button variant="ghost" size="sm" className="flex items-center" onClick={() => onIncrementCommentCount(post.id)}>
+            <MessageSquare className="mr-1 h-4 w-4" /> {post.commentsCount} Comment{post.commentsCount !== 1 ? 's' : ''}
           </Button>
         </div>
         <Button variant="link" size="sm">Read More</Button>

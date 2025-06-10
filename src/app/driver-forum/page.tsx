@@ -11,9 +11,9 @@ import { useAuth } from '@/hooks/use-auth';
 
 // Mock data
 const mockPosts: ForumPost[] = [
-  { id: 'fp1', authorId: 'driver1', authorName: 'Ali Kone', title: 'Best routes to avoid city center traffic?', content: 'Does anyone have tips on navigating around the main market area during peak hours? The usual routes are always jammed.', createdAt: '2023-10-28T10:00:00Z', commentsCount: 5 },
-  { id: 'fp2', authorId: 'driver2', authorName: 'Fatima Diallo', title: 'Question about vehicle maintenance for long trips', content: 'Planning a long haul delivery next week. What are some essential pre-trip checks for the vehicle to ensure everything runs smoothly?', createdAt: '2023-10-27T15:30:00Z', commentsCount: 8 },
-  { id: 'fp3', authorId: 'driver3', authorName: 'Moussa Traore', title: 'Dealing with unexpected road closures', content: 'Got stuck due to a sudden road closure yesterday. How do you guys handle these situations and find alternatives quickly?', createdAt: '2023-10-26T09:15:00Z', commentsCount: 3 },
+  { id: 'fp1', authorId: 'driver1', authorName: 'Ali Kone', title: 'Best routes to avoid city center traffic?', content: 'Does anyone have tips on navigating around the main market area during peak hours? The usual routes are always jammed.', createdAt: '2023-10-28T10:00:00Z', commentsCount: 5, likes: 12 },
+  { id: 'fp2', authorId: 'driver2', authorName: 'Fatima Diallo', title: 'Question about vehicle maintenance for long trips', content: 'Planning a long haul delivery next week. What are some essential pre-trip checks for the vehicle to ensure everything runs smoothly?', createdAt: '2023-10-27T15:30:00Z', commentsCount: 8, likes: 25 },
+  { id: 'fp3', authorId: 'driver3', authorName: 'Moussa Traore', title: 'Dealing with unexpected road closures', content: 'Got stuck due to a sudden road closure yesterday. How do you guys handle these situations and find alternatives quickly?', createdAt: '2023-10-26T09:15:00Z', commentsCount: 3, likes: 7 },
 ];
 
 export default function DriverForumPage() {
@@ -30,8 +30,25 @@ export default function DriverForumPage() {
       content: data.content,
       createdAt: new Date().toISOString(),
       commentsCount: 0,
+      likes: 0, // Initialize likes for new posts
     };
     setPosts([newPost, ...posts]);
+  };
+
+  const handleLikePost = (postId: string) => {
+    setPosts(prevPosts =>
+      prevPosts.map(post =>
+        post.id === postId ? { ...post, likes: post.likes + 1 } : post
+      )
+    );
+  };
+
+  const handleIncrementCommentCount = (postId: string) => {
+    setPosts(prevPosts =>
+      prevPosts.map(post =>
+        post.id === postId ? { ...post, commentsCount: post.commentsCount + 1 } : post
+      )
+    );
   };
 
   if (!user || user.role !== 'driver') {
@@ -48,7 +65,12 @@ export default function DriverForumPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-6">
           {posts.map((post) => (
-            <ForumPostCard key={post.id} post={post} />
+            <ForumPostCard 
+              key={post.id} 
+              post={post} 
+              onLikePost={handleLikePost}
+              onIncrementCommentCount={handleIncrementCommentCount}
+            />
           ))}
         </div>
         <div className="md:col-span-1">

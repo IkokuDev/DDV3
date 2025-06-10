@@ -56,6 +56,7 @@ export interface ForumPost {
   content: string;
   createdAt: string;
   commentsCount: number;
+  likes: number; // Added likes field
 }
 
 export interface ForumComment {
@@ -66,3 +67,4 @@ export interface ForumComment {
   content: string;
   createdAt: string;
 }
+
