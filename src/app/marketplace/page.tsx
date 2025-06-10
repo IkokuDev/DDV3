@@ -4,20 +4,10 @@
 import { AppShell } from '@/components/layout/app-shell';
 import { PageHeader } from '@/components/shared/page-header';
 import { ProductCard } from '@/components/products/product-card';
-import type { Product } from '@/lib/types';
+import { mockProducts } from '@/lib/mock-data'; // Updated import
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter } from 'lucide-react';
-
-// Mock data
-const mockProducts: Product[] = [
-  { id: '1', name: 'Artisan Coffee Beans', description: 'Fair-trade, single-origin coffee beans from the Sahel region.', price: 15.99, supplier: 'Sahel Roasters', category: 'Groceries', imageUrl: 'https://placehold.co/600x400.png' },
-  { id: '2', name: 'Handwoven Basket', description: 'Beautiful and durable basket handcrafted by local artisans.', price: 25.00, supplier: 'Artisans United', category: 'Home Goods', imageUrl: 'https://placehold.co/600x400.png' },
-  { id: '3', name: 'Shea Butter Soap', description: 'Natural shea butter soap, nourishing for skin.', price: 8.50, supplier: 'Naturelle Beauty', category: 'Beauty', imageUrl: 'https://placehold.co/600x400.png' },
-  { id: '4', name: 'Spiced Hibiscus Tea', description: 'Refreshing and aromatic hibiscus tea with local spices.', price: 12.00, supplier: 'Sahel Flavors', category: 'Groceries', imageUrl: 'https://placehold.co/600x400.png' },
-  { id: '5', name: 'Leather Sandals', description: 'Handmade leather sandals, traditional design.', price: 45.00, supplier: 'Crafts of Africa', category: 'Apparel', imageUrl: 'https://placehold.co/600x400.png' },
-  { id: '6', name: 'Millet Flour', description: 'Organic millet flour, a staple in Sahelian cuisine.', price: 9.75, supplier: 'FarmFresh Sahel', category: 'Groceries', imageUrl: 'https://placehold.co/600x400.png' },
-];
 
 export default function MarketplacePage() {
   return (

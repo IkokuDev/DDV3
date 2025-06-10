@@ -1,3 +1,4 @@
+
 export type UserRole = 'supplier' | 'buyer' | 'driver';
 
 export interface User {
@@ -15,6 +16,10 @@ export interface Product {
   supplier: string; // Supplier name or ID
   imageUrl?: string;
   category?: string;
+  dimensions: string; // e.g., "10cm x 5cm x 2cm"
+  weight: string; // e.g., "500g"
+  shippingCost: number;
+  imageAiHint?: string; // For placeholder image generation
 }
 
 export type OrderStatus = 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
