@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, ShoppingCart, Package, Truck, MessageSquare, Compass, UserCircle } from 'lucide-react';
+import { ArrowRight, ShoppingCart, Package, Truck, MessageSquare, Compass, UserCircle, Store } from 'lucide-react';
 import type { UserRole } from '@/lib/types';
 
 interface DashboardAction {
@@ -19,7 +19,7 @@ interface DashboardAction {
 }
 
 const actions: DashboardAction[] = [
-  { title: "Browse Marketplace", description: "Discover products from various suppliers.", href: "/marketplace", icon: ShoppingCart, roles: ['buyer', 'supplier', 'driver'] },
+  { title: "Browse Marketplace", description: "Discover products from various suppliers.", href: "/marketplace", icon: Store, roles: ['buyer', 'supplier'] }, // Updated roles
   { title: "Manage My Products", description: "List and manage your products for sale.", href: "/my-products", icon: Package, roles: ['supplier'] },
   { title: "Track My Orders", description: "View and track your placed orders.", href: "/my-orders", icon: ShoppingCart, roles: ['buyer'] },
   { title: "View Delivery Tasks", description: "Manage your assigned delivery tasks.", href: "/delivery-tasks", icon: Truck, roles: ['driver'] },

@@ -58,7 +58,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const navItems: NavItem[] = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['buyer', 'supplier', 'driver'] },
-    { href: '/marketplace', label: 'Marketplace', icon: Store, roles: ['buyer', 'supplier', 'driver'] },
+    { href: '/marketplace', label: 'Marketplace', icon: Store, roles: ['buyer', 'supplier'] }, // Updated roles
     { href: '/cart', label: 'My Cart', icon: ShoppingCart, roles: ['buyer'], badgeGetter: getCartItemCount }, // Cart Nav Item
     { href: '/my-products', label: 'My Products', icon: Package, roles: ['supplier'] },
     { href: '/my-orders', label: 'My Orders', icon: ShoppingCart, roles: ['buyer'] }, // My Orders can also use ShoppingCart
