@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingCart } from 'lucide-react'; // Removed DollarSign as we'll use text NGN
+import { ShoppingCart } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface ProductCardProps {
   product: Product;
@@ -29,8 +30,8 @@ export function ProductCard({ product }: ProductCardProps) {
         <CardContent className="p-4 flex-grow">
           <CardTitle className="font-headline text-xl mb-1 group-hover:text-primary transition-colors">{product.name}</CardTitle>
           <CardDescription className="text-sm text-muted-foreground mb-2 line-clamp-2">{product.description}</CardDescription>
-          <p className="text-xs text-muted-foreground">Supplier: {product.supplier}</p>
-          {product.category && <p className="text-xs text-muted-foreground">Category: <Badge variant="outline" className="ml-1">{product.category}</Badge></p>}
+          <p className="text-xs text-muted-foreground">Supplier: <span className="font-medium text-primary">{product.supplier}</span></p>
+          {product.category && <p className="text-xs text-muted-foreground mt-1">Category: <Badge variant="outline" className="ml-1">{product.category}</Badge></p>}
         </CardContent>
       </Link>
       <CardFooter className="p-4 flex justify-between items-center border-t bg-card">
@@ -49,6 +50,3 @@ export function ProductCard({ product }: ProductCardProps) {
     </Card>
   );
 }
-
-// Make sure Badge is imported if not already available globally or via another import
-import { Badge } from '@/components/ui/badge';
