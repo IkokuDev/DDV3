@@ -8,41 +8,45 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
+    --background: 150 11.1% 95.3%; /* Light Gray #F2F4F3 */
+    --foreground: 0 0% 3.9%; /* Shadcn default dark for good contrast */
+    --card: 0 0% 100%; /* White cards */
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
+    --primary: 207 100% 14.3%; /* Navy Blue #003049 */
+    --primary-foreground: 0 0% 98%; /* Light text on navy */
+    --secondary: 207 100% 25%; /* Lighter Navy Blue */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 90%; /* Lighter gray for muted elements */
     --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 0 0% 82.7%; /* Light Gray #D3D3D3 for accent */
+    --accent-foreground: 0 0% 9%; /* Dark text on light gray accent */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
+    --border: 0 0% 80%; /* Slightly darker border */
     --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --ring: 207 100% 14.3%; /* Navy Blue for rings */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+
+    /* Sidebar specific theme adjustments if needed, defaults might work */
+    --sidebar-background: 0 0% 98%; /* Default: Very light, almost white */
+    --sidebar-foreground: 240 5.3% 26.1%; /* Default: Dark gray */
+    --sidebar-primary: 207 100% 14.3%; /* Navy to match app primary */
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 0 0% 90%; /* Muted accent for sidebar */
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 85%;
+    --sidebar-ring: 207 100% 14.3%;
   }
+
   .dark {
+    /* TODO: Define dark theme based on Walking The Sahel palette if needed */
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -67,14 +71,15 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary: 207 100% 50%; /* Brighter Navy for dark mode */
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 207 100% 50%;
   }
 }
 
