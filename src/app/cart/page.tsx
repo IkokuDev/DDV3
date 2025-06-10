@@ -30,9 +30,14 @@ export default function CartPage() {
   }
 
   const cartTotal = getCartTotal();
-  // Placeholder for shipping, can be dynamic later
-  const shippingCost = cartTotal > 0 ? 500 : 0; 
-  const grandTotal = cartTotal + shippingCost;
+  const shippingCost = cartTotal > 0 ? 500 : 0; // Existing placeholder for shipping
+  const marketplaceCommissionRate = 0.05; // 5%
+  const logisticsServiceFeeRate = 0.08; // 8%
+
+  const marketplaceCommission = cartTotal * marketplaceCommissionRate;
+  const logisticsServiceFee = cartTotal * logisticsServiceFeeRate;
+  
+  const grandTotal = cartTotal + shippingCost + marketplaceCommission + logisticsServiceFee;
 
   return (
     <AppShell>
@@ -74,6 +79,14 @@ export default function CartPage() {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Shipping (Estimate)</span>
                 <span>₦{shippingCost.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Marketplace Commission (5%)</span>
+                <span>₦{marketplaceCommission.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Logistics Service Fee (8%)</span>
+                <span>₦{logisticsServiceFee.toFixed(2)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg">
