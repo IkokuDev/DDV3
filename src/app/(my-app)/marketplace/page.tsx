@@ -1,76 +1,144 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AppShell } from '@/components/layout/app-shell';
 import { PageHeader } from '@/components/shared/page-header';
 import { ProductCard } from '@/components/products/product-card';
-import { mockProducts } from '@/lib/mock-data';
 import type { Product } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, Inbox } from 'lucide-react';
+import { Search, Filter, Inbox, Loader2, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+// Helper function to fetch products (can be moved to a service file)
+async function fetchProductsFromPayload(
+  searchTerm: string, 
+  category: string, 
+  sort: string,
+  page: number = 1,
+  limit: number = 12
+): Promise<{ products: Product[], totalDocs: number, hasNextPage: boolean, hasPrevPage: boolean }> {
+  try {
+    // Construct query parameters
+    const queryParams = new URLSearchParams();
+    if (searchTerm) queryParams.append('search', searchTerm); // Assuming 'name' or a general search field is configured in Payload
+    if (category && category !== 'all') queryParams.append('category[equals]', category);
+    
+    // Sorting: Payload uses 'sort=-fieldName' for descending, 'sort=fieldName' for ascending
+    let sortParam = '';
+    if (sort === 'price-asc') sortParam = 'price';
+    else if (sort === 'price-desc') sortParam = '-price';
+    else if (sort === 'name-asc') sortParam = 'name';
+    else if (sort === 'name-desc') sortParam = '-name';
+    if (sortParam) queryParams.append('sort', sortParam);
+
+    queryParams.append('page', page.toString());
+    queryParams.append('limit', limit.toString());
+    queryParams.append('depth', '2'); // To populate vendor and images
+
+    // In a real app, this URL would be your Payload API endpoint
+    // For client-side fetching, you'd hit an API route that internally calls Payload
+    // Or, if using Payload's REST API directly and it's on a different domain, ensure CORS is set up.
+    // For this example, let's assume a relative API route for products:
+    const response = await fetch(`/api/payload/products?${queryParams.toString()}`);
+    
+    if (!response.ok) {
+      console.error("Failed to fetch products:", response.statusText);
+      throw new Error(`Failed to fetch products. Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return { 
+      products: data.docs || [],
+      totalDocs: data.totalDocs || 0,
+      hasNextPage: data.hasNextPage || false,
+      hasPrevPage: data.hasPrevPage || false,
+    };
+  } catch (error) {
+    console.error("Error fetching products from Payload:", error);
+    return { products: [], totalDocs: 0, hasNextPage: false, hasPrevPage: false }; // Return empty on error
+  }
+}
+
 
 const categories = [
   { value: "all", label: "All Categories" },
-  { value: "Raw Materials", label: "Raw Materials" },
-  { value: "Building Materials", label: "Building Materials" },
-  { value: "Agric/Livestock", label: "Agric/Livestock" },
-  { value: "Fuel Options", label: "Fuel Options" },
+  // These should match the `value` from your Payload Product collection's category field options
+  { value: "solid_minerals", label: "Solid Minerals" },
+  { value: "agric_products", label: "Agriculture" },
+  { value: "raw_materials", label: "Building Materials" },
+  { value: "petrol_gas", label: "Petrol & Gas" },
+  // Add other categories from your Payload config
 ];
 
 export default function MarketplacePage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [currentSort, setCurrentSort] = useState('name-asc'); // Default sort
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(mockProducts);
+  const [currentSort, setCurrentSort] = useState('name-asc');
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [hasPrevPage, setHasPrevPage] = useState(false);
+  const productsPerPage = 12;
+
+  const loadProducts = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const { products: fetchedProducts, totalDocs, hasNextPage: next, hasPrevPage: prev } = await fetchProductsFromPayload(
+        searchTerm, 
+        selectedCategory, 
+        currentSort,
+        currentPage,
+        productsPerPage
+      );
+      setProducts(fetchedProducts);
+      setTotalProducts(totalDocs);
+      setHasNextPage(next);
+      setHasPrevPage(prev);
+    } catch (e: any) {
+      setError(e.message || "Failed to load products.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [searchTerm, selectedCategory, currentSort, currentPage]);
 
   useEffect(() => {
-    let tempProducts = [...mockProducts];
-
-    // Filter by search term
-    if (searchTerm) {
-      tempProducts = tempProducts.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filter by category
-    if (selectedCategory && selectedCategory !== 'all') {
-      tempProducts = tempProducts.filter(product => product.category === selectedCategory);
-    }
-
-    // Sort products
-    tempProducts.sort((a, b) => {
-      switch (currentSort) {
-        case 'price-asc':
-          return a.price - b.price;
-        case 'price-desc':
-          return b.price - a.price;
-        case 'name-asc':
-          return a.name.localeCompare(b.name);
-        case 'name-desc':
-          return b.name.localeCompare(a.name);
-        default:
-          return 0;
-      }
-    });
-
-    setFilteredProducts(tempProducts);
-  }, [searchTerm, selectedCategory, currentSort]);
+    loadProducts();
+  }, [loadProducts]); // Re-fetch when filters or page change
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    setCurrentPage(1); // Reset to first page on new search
   };
 
   const handleCategoryChange = (value: string) => {
     setSelectedCategory(value);
+    setCurrentPage(1); // Reset to first page on category change
   };
 
   const handleSortChange = (value: string) => {
     setCurrentSort(value);
+    setCurrentPage(1); // Reset to first page on sort change
   };
+  
+  const handleNextPage = () => {
+    if (hasNextPage) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (hasPrevPage) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+
 
   return (
     <AppShell>
@@ -111,22 +179,55 @@ export default function MarketplacePage() {
               <SelectItem value="name-desc">Name: Z to A</SelectItem>
               <SelectItem value="price-asc">Price: Low to High</SelectItem>
               <SelectItem value="price-desc">Price: High to Low</SelectItem>
+              {/* Add more sort options if needed, e.g., by date */}
             </SelectContent>
           </Select>
         </div>
       </div>
-      {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+
+      {isLoading && (
+        <div className="flex justify-center items-center py-20">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          <p className="ml-4 text-lg">Loading products...</p>
         </div>
-      ) : (
-        <div className="text-center py-10">
-          <Inbox className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
-          <p className="text-xl font-semibold text-foreground">No products found</p>
-          <p className="text-muted-foreground">Try adjusting your search or filters.</p>
+      )}
+
+      {!isLoading && error && (
+        <div className="text-center py-10 bg-destructive/10 border border-destructive text-destructive p-6 rounded-md">
+          <AlertTriangle className="mx-auto h-12 w-12 mb-4" />
+          <p className="text-xl font-semibold">Error Loading Products</p>
+          <p>{error}</p>
+          <Button onClick={loadProducts} className="mt-4">Try Again</Button>
         </div>
+      )}
+
+      {!isLoading && !error && products.length === 0 && (
+        <div className="text-center py-20">
+          <Inbox className="mx-auto h-24 w-24 text-muted-foreground mb-6" />
+          <p className="text-2xl font-semibold text-foreground mb-2">No Products Found</p>
+          <p className="text-muted-foreground">Try adjusting your search or filters, or check back later.</p>
+        </div>
+      )}
+
+      {!isLoading && !error && products.length > 0 && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+          <div className="mt-8 flex justify-between items-center">
+            <Button onClick={handlePrevPage} disabled={!hasPrevPage || isLoading}>
+              Previous
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Page {currentPage} (Showing {products.length} of {totalProducts} products)
+            </span>
+            <Button onClick={handleNextPage} disabled={!hasNextPage || isLoading}>
+              Next
+            </Button>
+          </div>
+        </>
       )}
     </AppShell>
   );

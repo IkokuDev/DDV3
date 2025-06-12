@@ -1,7 +1,7 @@
 
 "use client";
 
-import type { Product, CartItem } from '@/lib/types';
+import type { Product, CartItem, PayloadMedia } from '@/lib/types'; // Import PayloadMedia
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -21,7 +21,7 @@ export const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false); // For controlling a cart drawer/modal if needed
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -45,6 +45,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [cartItems]);
 
   const addToCart = (product: Product, quantity: number = 1) => {
+    const firstImage = product.images?.[0]?.image;
+    const imageUrl = (typeof firstImage === 'object' && firstImage?.url) ? firstImage.url : undefined;
+    const imageAiHint = (typeof firstImage === 'object' && firstImage?.alt) ? firstImage.alt : product.name;
+
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
       if (existingItem) {
@@ -54,13 +58,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             : item
         );
       } else {
-        return [...prevItems, { 
-          id: product.id, 
-          name: product.name, 
-          price: product.price, 
-          imageUrl: product.imageUrl, 
-          imageAiHint: product.imageAiHint,
-          quantity 
+        return [...prevItems, {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          imageUrl: imageUrl || `https://placehold.co/100x100.png?text=${encodeURIComponent(product.name[0])}`,
+          imageAiHint: imageAiHint,
+          quantity
         }];
       }
     });
@@ -75,7 +79,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     toast({
       title: "Item Removed",
       description: "The item has been removed from your cart.",
-      variant: "destructive" 
+      variant: "destructive"
     });
   };
 
