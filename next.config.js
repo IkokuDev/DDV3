@@ -1,3 +1,5 @@
+import { withPayload } from "@payloadcms/next/withPayload";
+import { withPayload } from "@payloadcms/next/withPayload";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -12,4 +14,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPayload(withPayload(nextConfig));
