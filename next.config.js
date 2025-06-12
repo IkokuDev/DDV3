@@ -21,7 +21,7 @@ const nextConfig = {
       {
         protocol: 'http',
         hostname: 'localhost',
-        port: '8000', // Assuming your Payload CMS runs on port 8000
+        port: '9002', // Assuming your Payload CMS runs on port 8000
         pathname: '/media/**', // Or whatever path your media is served from
       },
       // Add any other domains from which you source images for Payload Media
