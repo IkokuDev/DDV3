@@ -20,12 +20,10 @@ async function fetchProductsFromPayload(
   limit: number = 12
 ): Promise<{ products: Product[], totalDocs: number, hasNextPage: boolean, hasPrevPage: boolean }> {
   try {
-    // Construct query parameters
     const queryParams = new URLSearchParams();
-    if (searchTerm) queryParams.append('search', searchTerm); // Assuming 'name' or a general search field is configured in Payload
+    if (searchTerm) queryParams.append('search', searchTerm);
     if (category && category !== 'all') queryParams.append('category[equals]', category);
     
-    // Sorting: Payload uses 'sort=-fieldName' for descending, 'sort=fieldName' for ascending
     let sortParam = '';
     if (sort === 'price-asc') sortParam = 'price';
     else if (sort === 'price-desc') sortParam = '-price';
@@ -35,16 +33,18 @@ async function fetchProductsFromPayload(
 
     queryParams.append('page', page.toString());
     queryParams.append('limit', limit.toString());
-    queryParams.append('depth', '2'); // To populate vendor and images
+    queryParams.append('depth', '2');
 
-    // In a real app, this URL would be your Payload API endpoint
-    // For client-side fetching, you'd hit an API route that internally calls Payload
-    // Or, if using Payload's REST API directly and it's on a different domain, ensure CORS is set up.
-    // For this example, let's assume a relative API route for products:
     const response = await fetch(`/api/payload/products?${queryParams.toString()}`);
     
     if (!response.ok) {
-      console.error("Failed to fetch products:", response.statusText);
+      let errorBody = "";
+      try {
+        errorBody = await response.text(); // Try to get error message from response body
+      } catch (e) {
+        // Ignore if body can't be read
+      }
+      console.error(`Failed to fetch products. Status: ${response.status}, StatusText: "${response.statusText}", Body: "${errorBody}"`);
       throw new Error(`Failed to fetch products. Status: ${response.status}`);
     }
     const data = await response.json();
@@ -55,20 +55,23 @@ async function fetchProductsFromPayload(
       hasPrevPage: data.hasPrevPage || false,
     };
   } catch (error) {
-    console.error("Error fetching products from Payload:", error);
-    return { products: [], totalDocs: 0, hasNextPage: false, hasPrevPage: false }; // Return empty on error
+    console.error("Error in fetchProductsFromPayload:", error);
+    // Re-throw to be caught by the calling function's catch block
+    // This ensures the UI can react to the error (e.g., show an error message)
+    if (error instanceof Error && error.message.startsWith('Failed to fetch products. Status:')) {
+      throw error; // Re-throw the specific error from above
+    }
+    throw new Error(`Client-side error fetching products: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
 
 const categories = [
   { value: "all", label: "All Categories" },
-  // These should match the `value` from your Payload Product collection's category field options
   { value: "solid_minerals", label: "Solid Minerals" },
   { value: "agric_products", label: "Agriculture" },
   { value: "raw_materials", label: "Building Materials" },
   { value: "petrol_gas", label: "Petrol & Gas" },
-  // Add other categories from your Payload config
 ];
 
 export default function MarketplacePage() {
@@ -102,7 +105,7 @@ export default function MarketplacePage() {
       setHasNextPage(next);
       setHasPrevPage(prev);
     } catch (e: any) {
-      setError(e.message || "Failed to load products.");
+      setError(e.message || "Failed to load products. Check server logs for more details.");
     } finally {
       setIsLoading(false);
     }
@@ -110,21 +113,21 @@ export default function MarketplacePage() {
 
   useEffect(() => {
     loadProducts();
-  }, [loadProducts]); // Re-fetch when filters or page change
+  }, [loadProducts]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1); // Reset to first page on new search
+    setCurrentPage(1); 
   };
 
   const handleCategoryChange = (value: string) => {
     setSelectedCategory(value);
-    setCurrentPage(1); // Reset to first page on category change
+    setCurrentPage(1); 
   };
 
   const handleSortChange = (value: string) => {
     setCurrentSort(value);
-    setCurrentPage(1); // Reset to first page on sort change
+    setCurrentPage(1); 
   };
   
   const handleNextPage = () => {
@@ -179,7 +182,6 @@ export default function MarketplacePage() {
               <SelectItem value="name-desc">Name: Z to A</SelectItem>
               <SelectItem value="price-asc">Price: Low to High</SelectItem>
               <SelectItem value="price-desc">Price: High to Low</SelectItem>
-              {/* Add more sort options if needed, e.g., by date */}
             </SelectContent>
           </Select>
         </div>

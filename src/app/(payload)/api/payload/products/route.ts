@@ -21,8 +21,6 @@ export async function GET(request: NextRequest) {
     }
     const searchTerm = searchParams.get('search');
     if (searchTerm) {
-      // Example: Search in 'name' and 'description' (if description is simple text or you have a search plugin)
-      // For rich text, searching is more complex. For now, let's assume 'name'.
       where.name = { like: searchTerm };
     }
 
@@ -36,9 +34,15 @@ export async function GET(request: NextRequest) {
     });
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error("Error in /api/payload/products GET:", error);
-    return NextResponse.json({ error: error.message || "Failed to fetch products" }, { status: 500 });
+    console.error("------------------------------------------------------");
+    console.error("Error in /api/payload/products GET route:");
+    console.error("Message:", error.message);
+    console.error("Stack:", error.stack);
+    console.error("Full Error Object:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+    console.error("------------------------------------------------------");
+    return NextResponse.json({ 
+      error: "Failed to fetch products from CMS.",
+      details: error.message // Send a generic message to client, but log details server-side
+    }, { status: 500 });
   }
 }
-
-// Add POST, PUT, DELETE etc. for products if needed, or rely on the generic [...slug] handler for those.
