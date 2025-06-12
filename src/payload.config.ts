@@ -11,7 +11,8 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Products } from './collections/Products';
-import { Vendors } from './collections/Vendors'; // Import the new Vendors collection
+import { Vendors } from './collections/Vendors';
+import { Vehicles } from './collections/Vehicles'; // Import the new Vehicles collection
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -27,7 +28,8 @@ export default buildConfig({
     Users,
     Media,
     Products,
-    Vendors // Add the Vendors collection here
+    Vendors,
+    Vehicles // Add the Vehicles collection here
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
