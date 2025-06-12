@@ -13,7 +13,8 @@ import { Media } from './collections/Media'
 import { Products } from './collections/Products';
 import { Vendors } from './collections/Vendors';
 import { Vehicles } from './collections/Vehicles';
-import { FleetOwners } from './collections/FleetOwners'; // Import the new FleetOwners collection
+import { FleetOwners } from './collections/FleetOwners';
+import { Drivers } from './collections/Drivers'; // Import the new Drivers collection
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -31,7 +32,8 @@ export default buildConfig({
     Products,
     Vendors,
     Vehicles,
-    FleetOwners // Add the FleetOwners collection here
+    FleetOwners,
+    Drivers // Add the Drivers collection here
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
