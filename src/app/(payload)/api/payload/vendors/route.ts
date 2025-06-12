@@ -1,6 +1,6 @@
 
 // src/app/(payload)/api/payload/vendors/route.ts
-import configPromise from '../../../../../payload.config';
+import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 import { NextRequest, NextResponse } from 'next/server';
 

@@ -1,6 +1,6 @@
 
 // src/app/(payload)/api/payload/products/route.ts
-import configPromise from '../../../../../payload.config';
+import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -21,6 +21,8 @@ export async function GET(request: NextRequest) {
     }
     const searchTerm = searchParams.get('search');
     if (searchTerm) {
+      // Assuming you want to search by product name. Adjust if it's a different field.
+      // The 'like' operator provides case-insensitive partial matching.
       where.name = { like: searchTerm };
     }
 
