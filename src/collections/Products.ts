@@ -1,99 +1,455 @@
-
 import type { CollectionConfig } from 'payload/types';
 
 export const Products: CollectionConfig = {
   slug: 'products',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'price', 'category', 'supplierName'],
-    group: 'Shop', // Optional: to group in admin UI
   },
   access: {
-    read: () => true, // Everyone can read products
-    // More specific access control can be added later if needed
-    // For example, only authenticated users with a 'supplier' role can create/update/delete.
-    // create: ({ req: { user } }) => !!user && user.roles?.includes('supplier'),
-    // update: ({ req: { user } }) => !!user && user.roles?.includes('supplier'),
-    // delete: ({ req: { user } }) => !!user && user.roles?.includes('supplier'),
+    read: () => true,
+    create: () => true,
   },
   fields: [
     {
       name: 'name',
-      label: 'Product Name',
       type: 'text',
       required: true,
     },
     {
       name: 'description',
-      label: 'Product Description',
-      type: 'textarea', // Using textarea for simplicity, can be 'richText' if editor is set up
+      type: 'richText',
+      required: true,
     },
     {
       name: 'price',
-      label: 'Price (NGN)',
       type: 'number',
       required: true,
       min: 0,
-      admin: {
-        description: 'Price in Nigerian Naira.',
-      }
     },
     {
-      name: 'supplierName',
-      label: 'Supplier Name',
-      type: 'text',
+      name: 'vendor',
+      type: 'relationship',
+      relationTo: 'vendors', // This collection will need to be defined
       required: true,
-      admin: {
-        description: 'Name of the supplier or their store (e.g., Sahel Roasters).',
-      },
+      hasMany: false,
     },
     {
       name: 'category',
-      label: 'Category',
       type: 'select',
+      required: true,
       options: [
-        { label: 'Raw Materials', value: 'Raw Materials' },
-        { label: 'Building Materials', value: 'Building Materials' },
-        { label: 'Agric/Livestock', value: 'Agric/Livestock' },
-        { label: 'Fuel Options', value: 'Fuel Options' },
-        { label: 'Health Foods', value: 'Health Foods' },
-        { label: 'Crafts', value: 'Crafts' },
-        { label: 'Other', value: 'Other' },
+        { label: 'Solid Minerals', value: 'solid_minerals' },
+        { label: 'Agriculture', value: 'agric_products' },
+        { label: 'Building Materials', value: 'raw_materials' },
+        { label: 'Petrol & Gas', value: 'petrol_gas' },
       ],
-      admin: {
-        position: 'sidebar',
-      }
     },
     {
-      name: 'productImage',
-      label: 'Product Image',
-      type: 'upload',
-      relationTo: 'media', // Links to the Media collection
-      admin: {
-        description: 'Upload the main image for the product.',
-      }
+      name: 'images',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      maxRows: 4,
+      labels: {
+        singular: 'Image',
+        plural: 'Images',
+      },
+      fields: [
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+        },
+      ],
     },
     {
-      name: 'dimensions',
-      label: 'Dimensions (e.g., 20cm x 10cm x 5cm)',
-      type: 'text',
+      name: 'priceUnit',
+      type: 'select',
+      required: true,
+      options: [
+        { label: 'Per Ton', value: 'per_ton' },
+        { label: 'Per Kg', value: 'per_kg' },
+        { label: 'Per Litre', value: 'per_litre' },
+        { label: 'Per Cubic Meter', value: 'per_cubic_meter' },
+      ],
     },
     {
-      name: 'weight',
-      label: 'Weight (e.g., 500g or 1.5kg)',
-      type: 'text',
+      name: 'status',
+      type: 'select',
+      required: true,
+      defaultValue: 'active',
+      options: [
+        { label: 'Active', value: 'active' },
+        { label: 'Draft', value: 'draft' },
+        { label: 'Out of Stock', value: 'out_of_stock' },
+      ],
+    },
+    // Inventory Tracking
+    {
+      name: 'inventory',
+      type: 'group',
+      fields: [
+        {
+          name: 'quantity',
+          type: 'number',
+          required: true,
+          min: 0,
+        },
+        {
+          name: 'lowStockThreshold',
+          type: 'number',
+          required: true,
+          min: 0,
+        },
+        {
+          name: 'trackingEnabled',
+          type: 'checkbox',
+          defaultValue: true,
+        },
+        {
+          name: 'allowBackorders',
+          type: 'checkbox',
+          defaultValue: false,
+        },
+        {
+          name: 'reservedQuantity',
+          type: 'number',
+          required: true,
+          defaultValue: 0,
+          min: 0,
+        },
+      ],
+    },
+    // NCX Integration
+    {
+      name: 'ncx',
+      type: 'group',
+      fields: [
+        {
+          name: 'listed',
+          type: 'checkbox',
+          defaultValue: false,
+          label: 'List on NCX',
+        },
+        {
+          name: 'warehouseId',
+          type: 'text',
+          admin: {
+            condition: (data) => data.ncx?.listed,
+          },
+        },
+        {
+          name: 'qualityTestingId',
+          type: 'text',
+          admin: {
+            condition: (data) => data.ncx?.listed,
+          },
+        },
+        {
+          name: 'marketPrice',
+          type: 'number',
+          min: 0,
+          admin: {
+            condition: (data) => data.ncx?.listed,
+          },
+        },
+        {
+          name: 'featured',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            condition: (data) => data.ncx?.listed,
+          },
+        },
+      ],
+    },
+    // Paystar Integration
+    {
+      name: 'paystar',
+      type: 'group',
+      fields: [
+        {
+          name: 'insuranceRequired',
+          type: 'checkbox',
+          defaultValue: false,
+          label: 'Require Insurance',
+        },
+        {
+          name: 'insuranceCoverage',
+          type: 'number',
+          min: 0,
+          admin: {
+            condition: (data) => data.paystar?.insuranceRequired,
+          },
+        },
+        {
+          name: 'creditFacility',
+          type: 'checkbox',
+          defaultValue: false,
+          label: 'Enable Credit Facility',
+        },
+        {
+          name: 'creditAmount',
+          type: 'number',
+          min: 0,
+          admin: {
+            condition: (data) => data.paystar?.creditFacility,
+          },
+        },
+        {
+          name: 'commissionRate',
+          type: 'number',
+          min: 0,
+          max: 100,
+          label: 'Commission Rate (%)',
+        },
+      ],
+    },
+    // Bulk Pricing Tiers
+    {
+      name: 'bulkPricing',
+      type: 'array',
+      fields: [
+        {
+          name: 'minimumQuantity',
+          type: 'number',
+          required: true,
+          min: 1,
+        },
+        {
+          name: 'pricePerUnit',
+          type: 'number',
+          required: true,
+          min: 0,
+        },
+        {
+          name: 'unit',
+          type: 'select',
+          required: true,
+          options: [
+            { label: 'Tons', value: 'tons' },
+            { label: 'Kg', value: 'kg' },
+            { label: 'Litres', value: 'litres' },
+            { label: 'Cubic Meters', value: 'm3' },
+          ],
+        },
+      ],
+    },
+    // Shipping Options
+    {
+      name: 'shipping',
+      type: 'group',
+      fields: [
+        {
+          name: 'weight',
+          type: 'number',
+          required: true,
+          min: 0,
+        },
+        {
+          name: 'dimensions',
+          type: 'group',
+          fields: [
+            {
+              name: 'length',
+              type: 'number',
+              required: true,
+              min: 0,
+            },
+            {
+              name: 'width',
+              type: 'number',
+              required: true,
+              min: 0,
+            },
+            {
+              name: 'height',
+              type: 'number',
+              required: true,
+              min: 0,
+            },
+          ],
+        },
+        {
+          name: 'shippingMethods',
+          type: 'array',
+          fields: [
+            {
+              name: 'method',
+              type: 'select',
+              required: true,
+              options: [
+                { label: 'Road Freight', value: 'road_freight' },
+                { label: 'Rail Freight', value: 'rail_freight' },
+                { label: 'Sea Freight', value: 'sea_freight' },
+                { label: 'Air Freight', value: 'air_freight' },
+              ],
+            },
+            {
+              name: 'estimatedDays',
+              type: 'number',
+              required: true,
+              min: 1,
+            },
+            {
+              name: 'pricePerKm',
+              type: 'number',
+              required: true,
+              min: 0,
+            },
+          ],
+        },
+        {
+          name: 'specialHandling',
+          type: 'checkbox',
+          label: 'Requires Special Handling',
+        },
+        {
+          name: 'handlingInstructions',
+          type: 'textarea',
+          admin: {
+            condition: (data) => data.shipping?.specialHandling, // Corrected condition path
+          },
+        },
+      ],
+    },
+    // Product Variants
+    {
+      name: 'variants',
+      type: 'array',
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'sku',
+          type: 'text',
+          required: true,
+          unique: true,
+        },
+        {
+          name: 'attributes',
+          type: 'group',
+          fields: [
+            {
+              name: 'grade',
+              type: 'select',
+              options: [
+                { label: 'Premium', value: 'premium' },
+                { label: 'Standard', value: 'standard' },
+                { label: 'Economy', value: 'economy' },
+              ],
+            },
+            {
+              name: 'purity',
+              type: 'number',
+              min: 0,
+              max: 100,
+            },
+            {
+              name: 'composition',
+              type: 'text',
+            },
+          ],
+        },
+        {
+          name: 'price',
+          type: 'number',
+          required: true,
+          min: 0,
+        },
+        {
+          name: 'inventory',
+          type: 'number',
+          required: true,
+          min: 0,
+        },
+      ],
     },
     {
-      name: 'shippingCost',
-      label: 'Estimated Shipping Cost (NGN)',
-      type: 'number',
-      min: 0,
-      admin: {
-        description: 'Estimated base shipping cost for this item.',
-      }
+      name: 'specifications', // This seems like a duplicate of shipping.weight and shipping.dimensions
+      type: 'group',        // Or intended for different non-shipping related specs
+      fields: [
+        {
+          name: 'weight', // Consider if this is different from shipping.weight
+          type: 'number',
+          // required: true, // Making optional if potentially redundant
+          min: 0,
+        },
+        {
+          name: 'dimensions', // Consider if this is different from shipping.dimensions
+          type: 'group',
+          fields: [
+            {
+              name: 'length',
+              type: 'number',
+              // required: true,
+              min: 0,
+            },
+            {
+              name: 'width',
+              type: 'number',
+              // required: true,
+              min: 0,
+            },
+            {
+              name: 'height',
+              type: 'number',
+              // required: true,
+              min: 0,
+            },
+          ],
+        },
+      ],
     },
-    // The 'id' field is automatically managed by Payload.
-    // 'imageUrl' and 'imageAiHint' from the old Product type are covered by 'productImage' (Media relation)
-    // and the 'alt' text in the Media collection respectively.
+    {
+      name: 'minimumOrder',
+      type: 'group',
+      fields: [
+        {
+          name: 'quantity',
+          type: 'number',
+          required: true,
+          min: 1,
+        },
+        {
+          name: 'unit',
+          type: 'select',
+          required: true,
+          options: [
+            { label: 'Tons', value: 'tons' },
+            { label: 'Kg', value: 'kg' },
+            { label: 'Litres', value: 'litres' },
+            { label: 'Cubic Meters', value: 'm3' },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'certificates',
+      type: 'array',
+      fields: [
+        {
+          name: 'certificate',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+        },
+        {
+          name: 'certificateType',
+          type: 'select',
+          required: true,
+          options: [
+            { label: 'Quality Assurance', value: 'quality_assurance' },
+            { label: 'Safety Certificate', value: 'safety' },
+            { label: 'Origin Certificate', value: 'origin' },
+            { label: 'Other', value: 'other' },
+          ],
+        },
+      ],
+    },
   ],
 };
