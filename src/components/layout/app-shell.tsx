@@ -113,19 +113,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               const badgeCount = item.badgeGetter ? item.badgeGetter() : null;
               return (
                 <SidebarMenuItem key={item.href}>
-                  <Link href={item.href} legacyBehavior passHref>
+                  <Link href={item.href}>
                     <SidebarMenuButton
                       asChild
                       isActive={pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))}
                       tooltip={{ children: item.label, side: 'right', align: 'center' }}
                     >
-                      <a>
+                      <>
                         <item.icon />
                         <span>{item.label}</span>
                         {badgeCount !== null && badgeCount > 0 && (
                            <SidebarMenuBadge>{badgeCount}</SidebarMenuBadge>
                         )}
-                      </a>
+                      </>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
@@ -138,9 +138,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <SidebarGroupLabel>Account</SidebarGroupLabel>
             <SidebarMenu>
                <SidebarMenuItem>
-                 <Link href="/settings" legacyBehavior passHref>
+                 <Link href="/settings">
                     <SidebarMenuButton asChild tooltip={{children: "Settings", side:"right", align:"center"}}>
-                      <a><Settings/><span>Settings</span></a>
+                      <>
+                        <Settings/>
+                        <span>Settings</span>
+                      </>
                     </SidebarMenuButton>
                  </Link>
                </SidebarMenuItem>
