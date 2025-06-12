@@ -10,7 +10,8 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
-import { Products } from './collections/Products'; // Import the new Products collection
+import { Products } from './collections/Products';
+import { Vendors } from './collections/Vendors'; // Import the new Vendors collection
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -23,9 +24,10 @@ export default buildConfig({
     },
   },
   collections: [
-    Users, 
-    Media, 
-    Products // Add the Products collection here
+    Users,
+    Media,
+    Products,
+    Vendors // Add the Vendors collection here
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
