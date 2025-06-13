@@ -116,7 +116,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen w-full">
-      <Sidebar collapsible="icon" variant="sidebar" side="left">
+      <Sidebar collapsible="icon" variant="floating" side="left">
         <SidebarHeader className="items-center justify-between">
             <Link href="/dashboard" className="flex items-center gap-2 text-primary">
               <Image src="/logo.png" alt="Walking The Sahel Logo" width={40} height={40} className="h-10 w-10" />
