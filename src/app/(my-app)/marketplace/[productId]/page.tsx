@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Product, PayloadMedia, PayloadVendor } from '@/lib/types';
 import { useCart } from '@/contexts/cart-context';
-import { ShoppingCart, ArrowLeft, Loader2, AlertTriangle, Box, Weight as WeightIcon, Truck as ShippingIcon, Info } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Loader2, AlertTriangle, Box, Weight as WeightIcon, Truck as ShippingIcon, Info, Package } from 'lucide-react';
 import { RichTextLexical } from '@/components/shared/rich-text-lexical'; // Assuming you'll create this
 
 // Helper function to fetch a single product

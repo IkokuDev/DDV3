@@ -6,23 +6,105 @@
  * and re-run `payload generate:types` to regenerate this file.
  */
 
+/**
+ * Supported timezones in IANA format.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supportedTimezones".
+ */
+export type SupportedTimezones =
+  | 'Pacific/Midway'
+  | 'Pacific/Niue'
+  | 'Pacific/Honolulu'
+  | 'Pacific/Rarotonga'
+  | 'America/Anchorage'
+  | 'Pacific/Gambier'
+  | 'America/Los_Angeles'
+  | 'America/Tijuana'
+  | 'America/Denver'
+  | 'America/Phoenix'
+  | 'America/Chicago'
+  | 'America/Guatemala'
+  | 'America/New_York'
+  | 'America/Bogota'
+  | 'America/Caracas'
+  | 'America/Santiago'
+  | 'America/Buenos_Aires'
+  | 'America/Sao_Paulo'
+  | 'Atlantic/South_Georgia'
+  | 'Atlantic/Azores'
+  | 'Atlantic/Cape_Verde'
+  | 'Europe/London'
+  | 'Europe/Berlin'
+  | 'Africa/Lagos'
+  | 'Europe/Athens'
+  | 'Africa/Cairo'
+  | 'Europe/Moscow'
+  | 'Asia/Riyadh'
+  | 'Asia/Dubai'
+  | 'Asia/Baku'
+  | 'Asia/Karachi'
+  | 'Asia/Tashkent'
+  | 'Asia/Calcutta'
+  | 'Asia/Dhaka'
+  | 'Asia/Almaty'
+  | 'Asia/Jakarta'
+  | 'Asia/Bangkok'
+  | 'Asia/Shanghai'
+  | 'Asia/Singapore'
+  | 'Asia/Tokyo'
+  | 'Asia/Seoul'
+  | 'Australia/Brisbane'
+  | 'Australia/Sydney'
+  | 'Pacific/Guam'
+  | 'Pacific/Noumea'
+  | 'Pacific/Auckland'
+  | 'Pacific/Fiji';
+
 export interface Config {
   auth: {
     users: UserAuthOperations;
   };
+  blocks: {};
   collections: {
     users: User;
     media: Media;
+    products: Product;
+    vendors: Vendor;
+    vehicles: Vehicle;
+    'fleet-owners': FleetOwner;
+    drivers: Driver;
+    orders: Order;
+    'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
+  };
+  collectionsJoins: {};
+  collectionsSelect: {
+    users: UsersSelect<false> | UsersSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    vendors: VendorsSelect<false> | VendorsSelect<true>;
+    vehicles: VehiclesSelect<false> | VehiclesSelect<true>;
+    'fleet-owners': FleetOwnersSelect<false> | FleetOwnersSelect<true>;
+    drivers: DriversSelect<false> | DriversSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
+    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
+    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
+    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
     defaultIDType: string;
   };
   globals: {};
+  globalsSelect: {};
   locale: null;
   user: User & {
     collection: 'users';
+  };
+  jobs: {
+    tasks: unknown;
+    workflows: unknown;
   };
 }
 export interface UserAuthOperations {
@@ -81,6 +163,368 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: string;
+  name: string;
+  description: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  price: number;
+  vendor: string | Vendor;
+  category: 'solid_minerals' | 'agric_products' | 'raw_materials' | 'petrol_gas';
+  images: {
+    image: string | Media;
+    id?: string | null;
+  }[];
+  priceUnit: 'per_ton' | 'per_kg' | 'per_litre' | 'per_cubic_meter';
+  status: 'active' | 'draft' | 'out_of_stock';
+  inventory: {
+    quantity: number;
+    lowStockThreshold: number;
+    trackingEnabled?: boolean | null;
+    allowBackorders?: boolean | null;
+    reservedQuantity: number;
+  };
+  ncx?: {
+    listed?: boolean | null;
+    warehouseId?: string | null;
+    qualityTestingId?: string | null;
+    marketPrice?: number | null;
+    featured?: boolean | null;
+  };
+  paystar?: {
+    insuranceRequired?: boolean | null;
+    insuranceCoverage?: number | null;
+    creditFacility?: boolean | null;
+    creditAmount?: number | null;
+    commissionRate?: number | null;
+  };
+  bulkPricing?:
+    | {
+        minimumQuantity: number;
+        pricePerUnit: number;
+        unit: 'tons' | 'kg' | 'litres' | 'm3';
+        id?: string | null;
+      }[]
+    | null;
+  shipping: {
+    weight: number;
+    dimensions: {
+      length: number;
+      width: number;
+      height: number;
+    };
+    shippingMethods?:
+      | {
+          method: 'road_freight' | 'rail_freight' | 'sea_freight' | 'air_freight';
+          estimatedDays: number;
+          pricePerKm: number;
+          id?: string | null;
+        }[]
+      | null;
+    specialHandling?: boolean | null;
+    handlingInstructions?: string | null;
+  };
+  variants?:
+    | {
+        name: string;
+        sku: string;
+        attributes?: {
+          grade?: ('premium' | 'standard' | 'economy') | null;
+          purity?: number | null;
+          composition?: string | null;
+        };
+        price: number;
+        inventory: number;
+        id?: string | null;
+      }[]
+    | null;
+  specifications?: {
+    weight?: number | null;
+    dimensions?: {
+      length?: number | null;
+      width?: number | null;
+      height?: number | null;
+    };
+  };
+  minimumOrder: {
+    quantity: number;
+    unit: 'tons' | 'kg' | 'litres' | 'm3';
+  };
+  certificates?:
+    | {
+        certificate: string | Media;
+        certificateType: 'quality_assurance' | 'safety' | 'origin' | 'other';
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vendors".
+ */
+export interface Vendor {
+  id: string;
+  user: string | User;
+  businessName: string;
+  businessType: 'solid_minerals' | 'agric_products' | 'raw_materials' | 'petrol_gas';
+  registrationNumber: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+  documents: {
+    businessLicense: string | Media;
+    taxCertificate: string | Media;
+  };
+  status: 'PENDING' | 'APPROVED' | 'SUSPENDED';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vehicles".
+ */
+export interface Vehicle {
+  id: string;
+  fleetOwner: string | FleetOwner;
+  type: 'TRUCK' | 'VAN' | 'TRAILER';
+  make: string;
+  model: string;
+  year: number;
+  licensePlate: string;
+  capacity: {
+    weight: number;
+    volume: number;
+  };
+  documents: {
+    registration: string | Media;
+    insurance: string | Media;
+    inspection: string | Media;
+  };
+  status: 'AVAILABLE' | 'IN_USE' | 'MAINTENANCE';
+  maintenanceHistory?:
+    | {
+        date: string;
+        description: string;
+        cost: number;
+        id?: string | null;
+      }[]
+    | null;
+  assignedDriver?: (string | null) | Driver;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fleet-owners".
+ */
+export interface FleetOwner {
+  id: string;
+  user: string | User;
+  companyName: string;
+  businessRegistrationNumber: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+  documents: {
+    businessLicense: string | Media;
+    insuranceCertificate: string | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "drivers".
+ */
+export interface Driver {
+  id: string;
+  user: string | User;
+  name: string;
+  fleetOwner: string | FleetOwner;
+  licenseNumber: string;
+  licenseExpiry: string;
+  experience: number;
+  documents: {
+    driverLicense: string | Media;
+    medicalCertificate: string | Media;
+  };
+  status: 'AVAILABLE' | 'ON_TRIP' | 'OFF_DUTY';
+  assignedVehicle?: (string | null) | Vehicle;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: string;
+  /**
+   * The user who placed the order (buyer).
+   */
+  user: string | User;
+  /**
+   * The user who is selling the products (supplier/vendor).
+   */
+  seller: string | User;
+  products: {
+    product: string | Product;
+    quantity: number;
+    /**
+     * Price of the product per unit at the time of order.
+     */
+    priceAtPurchase: number;
+    id?: string | null;
+  }[];
+  /**
+   * Total amount for the order.
+   */
+  total: number;
+  status:
+    | 'PENDING'
+    | 'PAYMENT_ESCROWED'
+    | 'SHIPPED'
+    | 'DELIVERED'
+    | 'INSPECTION_PASSED'
+    | 'PAYMENT_RELEASED'
+    | 'DISPUTED'
+    | 'REFUNDED'
+    | 'CANCELLED';
+  paymentStatus: 'PENDING' | 'IN_ESCROW' | 'RELEASED' | 'REFUNDED';
+  shippingAddress: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    country: string;
+  };
+  deliveryInstructions?: string | null;
+  /**
+   * Details related to the escrow process for this order.
+   */
+  escrowDetails?: {
+    /**
+     * External escrow service reference ID, if applicable.
+     */
+    escrowId?: string | null;
+    /**
+     * Code required by the buyer to release funds to the seller.
+     */
+    releaseCode?: string | null;
+    /**
+     * Deadline for the buyer to inspect goods and approve or dispute.
+     */
+    inspectionDeadline?: string | null;
+    /**
+     * Reason provided if the order is disputed by the buyer.
+     */
+    disputeReason?: string | null;
+  };
+  paymentProvider?: ('STRIPE' | 'PAYSTACK' | 'FLUTTERWAVE' | 'BANK_TRANSFER' | 'OTHER') | null;
+  paymentDetails?: {
+    /**
+     * Payment provider's transaction ID.
+     */
+    transactionId?: string | null;
+    paymentDate?: string | null;
+    amountPaid?: number | null;
+    currency?: string | null;
+    /**
+     * Additional payment details from the provider (e.g., raw response).
+     */
+    providerMetadata?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  orderNotes?:
+    | {
+        note: string;
+        user?: (string | null) | User;
+        timestamp?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-locked-documents".
+ */
+export interface PayloadLockedDocument {
+  id: string;
+  document?:
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: string | Product;
+      } | null)
+    | ({
+        relationTo: 'vendors';
+        value: string | Vendor;
+      } | null)
+    | ({
+        relationTo: 'vehicles';
+        value: string | Vehicle;
+      } | null)
+    | ({
+        relationTo: 'fleet-owners';
+        value: string | FleetOwner;
+      } | null)
+    | ({
+        relationTo: 'drivers';
+        value: string | Driver;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: string | Order;
+      } | null);
+  globalSlug?: string | null;
+  user: {
+    relationTo: 'users';
+    value: string | User;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
@@ -112,6 +556,358 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  price?: T;
+  vendor?: T;
+  category?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  priceUnit?: T;
+  status?: T;
+  inventory?:
+    | T
+    | {
+        quantity?: T;
+        lowStockThreshold?: T;
+        trackingEnabled?: T;
+        allowBackorders?: T;
+        reservedQuantity?: T;
+      };
+  ncx?:
+    | T
+    | {
+        listed?: T;
+        warehouseId?: T;
+        qualityTestingId?: T;
+        marketPrice?: T;
+        featured?: T;
+      };
+  paystar?:
+    | T
+    | {
+        insuranceRequired?: T;
+        insuranceCoverage?: T;
+        creditFacility?: T;
+        creditAmount?: T;
+        commissionRate?: T;
+      };
+  bulkPricing?:
+    | T
+    | {
+        minimumQuantity?: T;
+        pricePerUnit?: T;
+        unit?: T;
+        id?: T;
+      };
+  shipping?:
+    | T
+    | {
+        weight?: T;
+        dimensions?:
+          | T
+          | {
+              length?: T;
+              width?: T;
+              height?: T;
+            };
+        shippingMethods?:
+          | T
+          | {
+              method?: T;
+              estimatedDays?: T;
+              pricePerKm?: T;
+              id?: T;
+            };
+        specialHandling?: T;
+        handlingInstructions?: T;
+      };
+  variants?:
+    | T
+    | {
+        name?: T;
+        sku?: T;
+        attributes?:
+          | T
+          | {
+              grade?: T;
+              purity?: T;
+              composition?: T;
+            };
+        price?: T;
+        inventory?: T;
+        id?: T;
+      };
+  specifications?:
+    | T
+    | {
+        weight?: T;
+        dimensions?:
+          | T
+          | {
+              length?: T;
+              width?: T;
+              height?: T;
+            };
+      };
+  minimumOrder?:
+    | T
+    | {
+        quantity?: T;
+        unit?: T;
+      };
+  certificates?:
+    | T
+    | {
+        certificate?: T;
+        certificateType?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vendors_select".
+ */
+export interface VendorsSelect<T extends boolean = true> {
+  user?: T;
+  businessName?: T;
+  businessType?: T;
+  registrationNumber?: T;
+  address?:
+    | T
+    | {
+        street?: T;
+        city?: T;
+        state?: T;
+        zip?: T;
+      };
+  documents?:
+    | T
+    | {
+        businessLicense?: T;
+        taxCertificate?: T;
+      };
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vehicles_select".
+ */
+export interface VehiclesSelect<T extends boolean = true> {
+  fleetOwner?: T;
+  type?: T;
+  make?: T;
+  model?: T;
+  year?: T;
+  licensePlate?: T;
+  capacity?:
+    | T
+    | {
+        weight?: T;
+        volume?: T;
+      };
+  documents?:
+    | T
+    | {
+        registration?: T;
+        insurance?: T;
+        inspection?: T;
+      };
+  status?: T;
+  maintenanceHistory?:
+    | T
+    | {
+        date?: T;
+        description?: T;
+        cost?: T;
+        id?: T;
+      };
+  assignedDriver?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fleet-owners_select".
+ */
+export interface FleetOwnersSelect<T extends boolean = true> {
+  user?: T;
+  companyName?: T;
+  businessRegistrationNumber?: T;
+  address?:
+    | T
+    | {
+        street?: T;
+        city?: T;
+        state?: T;
+        zip?: T;
+      };
+  documents?:
+    | T
+    | {
+        businessLicense?: T;
+        insuranceCertificate?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "drivers_select".
+ */
+export interface DriversSelect<T extends boolean = true> {
+  user?: T;
+  name?: T;
+  fleetOwner?: T;
+  licenseNumber?: T;
+  licenseExpiry?: T;
+  experience?: T;
+  documents?:
+    | T
+    | {
+        driverLicense?: T;
+        medicalCertificate?: T;
+      };
+  status?: T;
+  assignedVehicle?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  user?: T;
+  seller?: T;
+  products?:
+    | T
+    | {
+        product?: T;
+        quantity?: T;
+        priceAtPurchase?: T;
+        id?: T;
+      };
+  total?: T;
+  status?: T;
+  paymentStatus?: T;
+  shippingAddress?:
+    | T
+    | {
+        street?: T;
+        city?: T;
+        state?: T;
+        zip?: T;
+        country?: T;
+      };
+  deliveryInstructions?: T;
+  escrowDetails?:
+    | T
+    | {
+        escrowId?: T;
+        releaseCode?: T;
+        inspectionDeadline?: T;
+        disputeReason?: T;
+      };
+  paymentProvider?: T;
+  paymentDetails?:
+    | T
+    | {
+        transactionId?: T;
+        paymentDate?: T;
+        amountPaid?: T;
+        currency?: T;
+        providerMetadata?: T;
+      };
+  orderNotes?:
+    | T
+    | {
+        note?: T;
+        user?: T;
+        timestamp?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-locked-documents_select".
+ */
+export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
+  document?: T;
+  globalSlug?: T;
+  user?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-preferences_select".
+ */
+export interface PayloadPreferencesSelect<T extends boolean = true> {
+  user?: T;
+  key?: T;
+  value?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-migrations_select".
+ */
+export interface PayloadMigrationsSelect<T extends boolean = true> {
+  name?: T;
+  batch?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
