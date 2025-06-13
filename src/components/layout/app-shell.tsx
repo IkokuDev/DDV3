@@ -38,6 +38,7 @@ import {
   Settings,
   Store,
   Compass,
+  Map, // Added Map icon
 } from 'lucide-react';
 import type { UserRole } from '@/lib/types';
 
@@ -63,6 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { href: '/my-products', label: 'My Products', icon: Package, roles: ['supplier'] },
     { href: '/my-orders', label: 'My Orders', icon: ShoppingCart, roles: ['buyer'] }, // My Orders can also use ShoppingCart
     { href: '/delivery-tasks', label: 'Delivery Tasks', icon: Truck, roles: ['driver'] },
+    { href: '/task-map', label: 'Interactive Map', icon: Map, roles: ['driver'] }, // New Item
     { href: '/driver-forum', label: 'Driver Forum', icon: MessageSquare, roles: ['driver'] },
     { href: '/route-optimizer', label: 'Route Optimizer', icon: Compass, roles: ['driver'] },
   ];
