@@ -29,14 +29,8 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-background p-8 text-center">
-      <Image 
-        src="/logo.png" 
-        alt="Walking The Sahel Logo" 
-        width={195} 
-        height={195} 
-        className="mb-6" 
-      />
-      <h1 className="font-headline text-6xl md:text-7xl font-bold text-primary mb-4">
+      {/* Logo removed */}
+      <h1 className="font-headline text-6xl md:text-7xl font-bold text-primary mb-4 mt-12">
         Walking The Sahel
       </h1>
       <p className="font-body text-xl md:text-2xl text-foreground/80 max-w-2xl mb-10">
