@@ -8,7 +8,7 @@ import { CartLineItem } from '@/components/cart/cart-line-item';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { ShoppingCart, Trash2 } from 'lucide-react';
+import { ShoppingCart, Trash2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CartPage() {
@@ -77,7 +77,7 @@ export default function CartPage() {
                 <span>₦{cartTotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Shipping (Estimate)</span>
+                <span className="text-muted-foreground">Shipping (Estimate - will be confirmed next step)</span>
                 <span>₦{shippingCost.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
@@ -90,14 +90,16 @@ export default function CartPage() {
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg">
-                <span>Grand Total</span>
+                <span>Grand Total (Approx.)</span>
                 <span>₦{grandTotal.toFixed(2)}</span>
               </div>
             </CardContent>
             <CardFooter className="flex-col gap-2">
-              <Button className="w-full text-lg py-6" size="lg">
-                Proceed to Checkout
-              </Button>
+              <Link href="/delivery-options" className="w-full">
+                <Button className="w-full text-lg py-6" size="lg">
+                  Choose Delivery Options <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
               <Link href="/marketplace" className="w-full">
                 <Button variant="outline" className="w-full">
                   Continue Shopping
