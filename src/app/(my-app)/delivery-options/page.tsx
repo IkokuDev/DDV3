@@ -1,18 +1,20 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppShell } from '@/components/layout/app-shell';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { TaskMapPlaceholder } from '@/components/tasks/task-map-placeholder'; // Reusing for map placeholder
+import LeafletMap, { type MapMarker } from '@/components/maps/leaflet-map'; // Import the new LeafletMap
 import Link from 'next/link';
-import { ArrowRight, MapPin, Truck, PackageCheck } from 'lucide-react';
+import { ArrowRight, MapPin, Truck, PackageCheck, User, Compass } from 'lucide-react';
 import { useCart } from '@/contexts/cart-context';
 import { Separator } from '@/components/ui/separator';
+import type { LatLngExpression } from 'leaflet';
+
 
 interface DeliveryOption {
   id: string;
@@ -29,16 +31,39 @@ const mockDeliveryOptions: DeliveryOption[] = [
   { id: 'pickup', name: 'Local Pickup', description: 'Collect your order from a designated point.', eta: 'Ready in 24 hours', cost: 0, icon: PackageCheck },
 ];
 
+// Mock Data for Map
+const userMockLocation: LatLngExpression = [12.6392, -8.0029]; // Bamako, Mali
+const mockDriverLocations: MapMarker[] = [
+  { position: [12.6492, -8.0129], popupContent: "Driver Alpha", iconUrl: "https://placehold.co/32x32/003049/white.png?text=D", iconSize: [32,32] },
+  { position: [12.6292, -7.9929], popupContent: "Driver Bravo", iconUrl: "https://placehold.co/32x32/003049/white.png?text=D", iconSize: [32,32] },
+  { position: [12.6350, -8.0000], popupContent: "Driver Charlie", iconUrl: "https://placehold.co/32x32/003049/white.png?text=D", iconSize: [32,32] },
+];
+
+const userLocationMarker: MapMarker = {
+    position: userMockLocation,
+    popupContent: "Your Estimated Location",
+    iconUrl: "https://placehold.co/32x32/f03e3e/white.png?text=U", // Red for user
+    iconSize: [32,32]
+};
+
+const allMapMarkers = [userLocationMarker, ...mockDriverLocations];
+
+
 export default function DeliveryOptionsPage() {
   const [selectedOption, setSelectedOption] = useState<string | undefined>(mockDeliveryOptions[0]?.id);
   const { getCartTotal, getCartItemCount } = useCart();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
 
   const cartSubtotal = getCartTotal();
   const selectedDeliveryCost = mockDeliveryOptions.find(opt => opt.id === selectedOption)?.cost || 0;
   const grandTotal = cartSubtotal + selectedDeliveryCost;
 
   if (getCartItemCount() === 0) {
-     // Redirect to cart or marketplace if cart is empty, ideally handled by AppShell or router guards
     return (
       <AppShell>
         <PageHeader title="No Items in Cart" description="Please add items to your cart to select delivery options."/>
@@ -62,18 +87,23 @@ export default function DeliveryOptionsPage() {
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="font-headline text-xl flex items-center">
-                <MapPin className="mr-2 h-6 w-6 text-primary" /> Delivery Location & Map
+                <MapPin className="mr-2 h-6 w-6 text-primary" /> Delivery Location & Nearby Drivers
               </CardTitle>
               <CardDescription>
-                Your delivery address will be confirmed at checkout. Map below shows a conceptual view.
+                Map shows your approximate location and available drivers (mock data).
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {/* For now, using TaskMapPlaceholder. It needs to be adapted or replaced with a real map later. */}
-              <TaskMapPlaceholder />
+              {isClient ? (
+                <LeafletMap center={userMockLocation} zoom={12} markers={allMapMarkers} className="rounded-md" />
+              ) : (
+                <div className="aspect-video bg-muted rounded-md flex items-center justify-center">
+                  <Compass className="h-12 w-12 text-muted-foreground animate-pulse" />
+                   <p className="ml-2">Loading map...</p>
+                </div>
+              )}
               <p className="text-sm text-muted-foreground mt-4">
-                This map will show your location and available drivers. For now, it's a placeholder.
-                Actual driver assignment and route will be determined after order confirmation.
+                This map is for illustrative purposes. Actual driver assignment and route will be determined after order confirmation.
               </p>
             </CardContent>
           </Card>

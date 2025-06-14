@@ -1,3 +1,4 @@
+
 {
   "name": "nextn",
   "version": "0.1.0",
@@ -47,6 +48,7 @@
     "firebase": "^11.8.1",
     "genkit": "^1.8.0",
     "graphql": "^16.11.0",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.475.0",
     "mongodb": "^6.17.0",
     "next": "15.3.3",
@@ -56,6 +58,7 @@
     "react-day-picker": "^8.10.1",
     "react-dom": "19.0.0-rc.0",
     "react-hook-form": "^7.54.2",
+    "react-leaflet": "^4.2.1",
     "recharts": "^2.15.1",
     "sharp": "^0.34.2",
     "tailwind-merge": "^3.0.1",
@@ -63,6 +66,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.12",
     "@types/node": "^20",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
@@ -70,5 +74,69 @@
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "overrides": {
+    "react-leaflet": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@dnd-kit/accessibility": {
+      "react": "$react"
+    },
+    "@dnd-kit/core": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@dnd-kit/sortable": {
+      "react": "$react"
+    },
+    "@dnd-kit/utilities": {
+      "react": "$react"
+    },
+    "@emotion/react": {
+      "react": "$react"
+    },
+    "@emotion/use-insertion-effect-with-fallbacks": {
+      "react": "$react"
+    },
+    "@faceless-ui/scroll-info": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@faceless-ui/window-info": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@floating-ui/react": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@floating-ui/react-dom": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@lexical/devtools-core": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@lexical/react": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@monaco-editor/react": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@payloadcms/richtext-lexical": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "react-datepicker": {
+        "react": "$react",
+        "react-dom": "$react-dom"
+    },
+    "lucide-react": {
+      "react": "$react"
+    }
   }
 }
