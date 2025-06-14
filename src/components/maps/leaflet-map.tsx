@@ -4,21 +4,7 @@
 import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-
-// Fix for default marker icon issue with webpack
-// Ensure you have marker-icon.png, marker-icon-2x.png, and marker-shadow.png in your public/images/leaflet folder
-// If not using public folder, you might need to adjust paths or use a CDN for icons.
-// For simplicity, this example tries to use Leaflet's default CDN paths for icons if local images are not set up.
-// If default icons don't appear, ensure leaflet's images are correctly referenced or provide custom icons.
-// One common fix:
-// delete (L.Icon.Default.prototype as any)._getIconUrl;
-// L.Icon.Default.mergeOptions({
-//   iconRetinaUrl: '/leaflet/marker-icon-2x.png', // Adjust path if needed
-//   iconUrl: '/leaflet/marker-icon.png',         // Adjust path if needed
-//   shadowUrl: '/leaflet/marker-shadow.png',     // Adjust path if needed
-// });
-// However, relying on the library's default CDN handling is often sufficient if leaflet.css is properly imported.
+// Note: 'leaflet/dist/leaflet.css' is now imported via CDN in layout.tsx
 
 // Custom hook to handle map view changes if needed, e.g. recentering
 const ChangeView = ({ center, zoom }: { center: L.LatLngExpression, zoom: number }) => {
@@ -62,12 +48,6 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
     });
   }, []);
-
-
-  if (typeof window === 'undefined') {
-    // Don't render the map on the server
-    return <div style={style} className={className}><p className="text-center p-4">Loading map...</p></div>;
-  }
 
   return (
     <MapContainer center={center} zoom={zoom} style={style} className={className}>

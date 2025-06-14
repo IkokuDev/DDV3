@@ -2,19 +2,29 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { AppShell } from '@/components/layout/app-shell';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import LeafletMap, { type MapMarker } from '@/components/maps/leaflet-map'; // Import the new LeafletMap
 import Link from 'next/link';
 import { ArrowRight, MapPin, Truck, PackageCheck, User, Compass } from 'lucide-react';
 import { useCart } from '@/contexts/cart-context';
 import { Separator } from '@/components/ui/separator';
 import type { LatLngExpression } from 'leaflet';
+import type { MapMarker } from '@/components/maps/leaflet-map'; // Import type
 
+const LeafletMap = dynamic(() => import('@/components/maps/leaflet-map'), {
+  ssr: false,
+  loading: () => (
+    <div className="aspect-video bg-muted rounded-md flex items-center justify-center">
+      <Compass className="h-12 w-12 text-muted-foreground animate-pulse" />
+      <p className="ml-2">Loading map...</p>
+    </div>
+  ),
+});
 
 interface DeliveryOption {
   id: string;
@@ -52,12 +62,6 @@ const allMapMarkers = [userLocationMarker, ...mockDriverLocations];
 export default function DeliveryOptionsPage() {
   const [selectedOption, setSelectedOption] = useState<string | undefined>(mockDeliveryOptions[0]?.id);
   const { getCartTotal, getCartItemCount } = useCart();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
 
   const cartSubtotal = getCartTotal();
   const selectedDeliveryCost = mockDeliveryOptions.find(opt => opt.id === selectedOption)?.cost || 0;
@@ -94,14 +98,7 @@ export default function DeliveryOptionsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {isClient ? (
-                <LeafletMap center={userMockLocation} zoom={12} markers={allMapMarkers} className="rounded-md" />
-              ) : (
-                <div className="aspect-video bg-muted rounded-md flex items-center justify-center">
-                  <Compass className="h-12 w-12 text-muted-foreground animate-pulse" />
-                   <p className="ml-2">Loading map...</p>
-                </div>
-              )}
+              <LeafletMap center={userMockLocation} zoom={12} markers={allMapMarkers} className="rounded-md" />
               <p className="text-sm text-muted-foreground mt-4">
                 This map is for illustrative purposes. Actual driver assignment and route will be determined after order confirmation.
               </p>
