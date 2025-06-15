@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import type LType from 'leaflet';
-import { cn } from "@/lib/utils"; // Import cn utility
+import { cn } from "@/lib/utils";
 
 // Flag to ensure icon fix runs only once per application lifecycle
 let leafletIconsFixed = false;
@@ -32,11 +32,14 @@ interface LeafletMapProps {
   className?: string;
 }
 
+// Define default style outside the component to ensure stable reference
+const defaultMapStyle: React.CSSProperties = { height: '400px', width: '100%' };
+
 const LeafletMap: React.FC<LeafletMapProps> = ({
   center,
   zoom = 13,
   markers = [],
-  style = { height: '400px', width: '100%' }, // Default style
+  style = defaultMapStyle, // Use the stable default style
   className,
 }) => {
   const [L, setL] = useState<typeof LType | null>(null);
@@ -58,16 +61,14 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       }
       setL(LInstance);
     } else if (typeof window !== 'undefined') {
-      // This console.error indicates a problem with Leaflet loading, separate from the re-initialization error
       console.error("Leaflet 'L' object not found on window. Ensure 'react-leaflet' and 'leaflet' are correctly installed and loaded.");
     }
-  }, []); // Empty dependency array means this runs once after initial render (or twice in Strict Mode)
+  }, []);
 
   if (!L) {
-    // This placeholder is shown if L hasn't been set yet (e.g., Leaflet library not loaded)
     return (
       <div
-        style={style} // Apply provided style to the placeholder
+        style={style} // Use the potentially passed style or the stable default
         className={cn(className, "flex items-center justify-center bg-muted")}
       >
         <p>Map library (L) not available...</p>
@@ -75,33 +76,34 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
     );
   }
 
-  // The MapContainer should be rendered only once L is available.
-  // The outer div takes the passed style and className, and MapContainer fills this div.
   return (
-    <div style={style} className={className}>
-      <MapContainer center={center} zoom={zoom} style={{ height: "100%", width: "100%" }} >
-        <ChangeView center={center} zoom={zoom} />
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {markers.map((marker, index) => {
-          let customIcon: LType.Icon | undefined;
-          if (marker.iconUrl && marker.iconSize && L) { // Ensure L is available for icon creation
-            customIcon = new L.Icon({
-              iconUrl: marker.iconUrl,
-              iconSize: marker.iconSize,
-              iconAnchor: [marker.iconSize[0] / 2, marker.iconSize[1]],
-              popupAnchor: [0, -marker.iconSize[1]]
-            });
-          }
-          return (
-            <Marker key={index} position={marker.position} icon={customIcon || new L.Icon.Default()}>
-              {marker.popupContent && <Popup>{marker.popupContent}</Popup>}
-            </Marker>
-          );
-        })}
-      </MapContainer>
+    <div style={style} className={cn("leaflet-map-wrapper", className)}>
+      {/* Ensure L is available before rendering MapContainer as an extra precaution, though the above check should suffice */}
+      {L && (
+        <MapContainer center={center} zoom={zoom} style={{ height: "100%", width: "100%" }} >
+          <ChangeView center={center} zoom={zoom} />
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {markers.map((marker, index) => {
+            let customIcon: LType.Icon | undefined;
+            if (marker.iconUrl && marker.iconSize && L) {
+              customIcon = new L.Icon({
+                iconUrl: marker.iconUrl,
+                iconSize: marker.iconSize,
+                iconAnchor: [marker.iconSize[0] / 2, marker.iconSize[1]],
+                popupAnchor: [0, -marker.iconSize[1]]
+              });
+            }
+            return (
+              <Marker key={index} position={marker.position} icon={customIcon || new L.Icon.Default()}>
+                {marker.popupContent && <Popup>{marker.popupContent}</Popup>}
+              </Marker>
+            );
+          })}
+        </MapContainer>
+      )}
     </div>
   );
 };
