@@ -131,7 +131,7 @@
       "react": "$react",
       "react-dom": "$react-dom"
     },
-    "react-datepicker": {
+    "react-day-picker": {
         "react": "$react",
         "react-dom": "$react-dom"
     },
