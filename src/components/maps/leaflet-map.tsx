@@ -69,8 +69,11 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
   useEffect(() => {
     // Cleanup function to remove the map instance
     return () => {
-      if (mapRef.current && mapRef.current.getContainer()) {
-        // Check if the map container still exists before removing
+      if (mapRef.current) {
+        // Check if the map container still exists and if the map instance is valid
+        // map.off() removes all event listeners from the map
+        mapRef.current.off();
+        // map.remove() removes the map from the DOM and invalidates its container
         mapRef.current.remove();
         mapRef.current = null; // Clear the ref
       }
