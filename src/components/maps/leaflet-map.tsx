@@ -3,6 +3,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+// Import L as a type only, to prevent build-time static import issues.
 import type LType from 'leaflet';
 import { cn } from "@/lib/utils";
 
@@ -62,7 +63,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       }
       setL(LInstance);
     } else if (typeof window !== 'undefined') {
-      console.error("Leaflet 'L' object not found on window. Ensure 'react-leaflet' and 'leaflet' are correctly installed and loaded, or that leaflet.css is properly linked if using CDN for core Leaflet JS too.");
+      console.warn("Leaflet 'L' object not found on window. Map rendering might be delayed or fail if not loaded by react-leaflet.");
     }
   }, []);
 
@@ -76,12 +77,12 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
         
         mapInstance.off(); // Remove all event listeners from the map
         mapInstance.remove(); // Remove the map from the DOM and invalidate its container
-        mapRef.current = null; // Clear the ref
-
+        
         // After removing, explicitly try to clear Leaflet's internal ID from the container
         if (container && (container as any)._leaflet_id) {
           (container as any)._leaflet_id = null;
         }
+        mapRef.current = null; // Explicitly nullify the ref AFTER all cleanup
       }
     };
   }, []); // Empty dependency array ensures this runs on unmount
@@ -92,7 +93,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
         style={style}
         className={cn("leaflet-map-wrapper flex items-center justify-center bg-muted", className)}
       >
-        <p>Loading map library (L)...</p>
+        <p>Map library (L) not available yet, or map is loading...</p>
       </div>
     );
   }
