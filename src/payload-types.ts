@@ -387,9 +387,9 @@ export interface Order {
    */
   user: string | User;
   /**
-   * The user who is selling the products (supplier/vendor).
+   * The vendor who is selling the products.
    */
-  seller: string | User;
+  seller: string | Vendor;
   products: {
     product: string | Product;
     quantity: number;
@@ -403,17 +403,35 @@ export interface Order {
    * Total amount for the order.
    */
   total: number;
+  /**
+   * Subtotal of all product line items.
+   */
+  subtotal: number;
+  /**
+   * Cost of shipping for this order.
+   */
+  shippingCost?: number | null;
+  /**
+   * Commission for the marketplace platform.
+   */
+  marketplaceCommission?: number | null;
+  /**
+   * Fee for logistics services.
+   */
+  logisticsServiceFee?: number | null;
   status:
     | 'PENDING'
+    | 'PROCESSING'
     | 'PAYMENT_ESCROWED'
     | 'SHIPPED'
     | 'DELIVERED'
     | 'INSPECTION_PASSED'
     | 'PAYMENT_RELEASED'
+    | 'COMPLETED'
     | 'DISPUTED'
     | 'REFUNDED'
     | 'CANCELLED';
-  paymentStatus: 'PENDING' | 'IN_ESCROW' | 'RELEASED' | 'REFUNDED';
+  paymentStatus: 'PENDING' | 'PAID' | 'FAILED' | 'IN_ESCROW' | 'RELEASED' | 'REFUNDED';
   shippingAddress: {
     street: string;
     city: string;
@@ -443,7 +461,7 @@ export interface Order {
      */
     disputeReason?: string | null;
   };
-  paymentProvider?: ('STRIPE' | 'PAYSTACK' | 'FLUTTERWAVE' | 'BANK_TRANSFER' | 'OTHER') | null;
+  paymentProvider?: ('STRIPE' | 'PAYSTACK' | 'FLUTTERWAVE' | 'BANK_TRANSFER' | 'COD' | 'OTHER') | null;
   paymentDetails?: {
     /**
      * Payment provider's transaction ID.
@@ -836,6 +854,10 @@ export interface OrdersSelect<T extends boolean = true> {
         id?: T;
       };
   total?: T;
+  subtotal?: T;
+  shippingCost?: T;
+  marketplaceCommission?: T;
+  logisticsServiceFee?: T;
   status?: T;
   paymentStatus?: T;
   shippingAddress?:
