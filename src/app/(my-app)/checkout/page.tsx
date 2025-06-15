@@ -10,46 +10,114 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/contexts/cart-context';
+import { useAuth } from '@/hooks/use-auth';
 import Link from 'next/link';
-import { CreditCard, ShoppingBag, Truck, ArrowLeft, Lock } from 'lucide-react';
+import { CreditCard, ShoppingBag, Truck, ArrowLeft, Lock, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useToast } from "@/hooks/use-toast";
 
 export default function CheckoutPage() {
   const { cartItems, getCartTotal, clearCart } = useCart();
+  const { user } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mock data - in a real app, this would come from delivery options page state or context
-  const mockSelectedDelivery = {
-    name: 'Standard Delivery',
-    cost: 1500,
-    eta: '3-5 business days',
-  };
-
+  // For this simplified version, delivery cost is estimated directly.
+  // In a full app, this would come from the selected delivery option.
   const cartSubtotal = getCartTotal();
-  const deliveryCost = mockSelectedDelivery.cost;
+  const estimatedDeliveryCost = cartSubtotal > 0 ? 1500 : 0; // Placeholder fixed delivery cost
   const marketplaceCommissionRate = 0.05; // 5%
   const logisticsServiceFeeRate = 0.08; // 8%
 
   const marketplaceCommission = cartSubtotal * marketplaceCommissionRate;
   const logisticsServiceFee = cartSubtotal * logisticsServiceFeeRate;
 
-  const grandTotal = cartSubtotal + deliveryCost + marketplaceCommission + logisticsServiceFee;
+  const grandTotal = cartSubtotal + estimatedDeliveryCost + marketplaceCommission + logisticsServiceFee;
 
   const handlePlaceOrder = async () => {
+    if (!user || cartItems.length === 0) {
+      toast({
+        title: "Cannot Place Order",
+        description: "You must be logged in and have items in your cart.",
+        variant: "destructive",
+      });
+      return;
+    }
     setIsLoading(true);
-    // Simulate API call for order placement
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // In a real app:
-    // 1. Create order in backend (e.g., Payload CMS)
-    // 2. Process payment
-    // 3. Handle success/failure
-    
-    clearCart(); // Clear cart after successful mock order
-    setIsLoading(false);
-    // For now, let's assume order ID is mock
-    router.push(`/order-confirmation?orderId=MOCK_ORDER_12345`); 
+
+    // Simplified: Assume all items are from the first item's vendor.
+    // A real app would group by vendorId and create multiple orders if necessary.
+    const firstVendorId = cartItems[0]?.vendorId;
+    if (!firstVendorId) {
+      toast({
+        title: "Order Creation Failed",
+        description: "Vendor information is missing for cart items.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    const orderPayload = {
+      user: user.id, // Buyer's user ID
+      seller: firstVendorId, // Vendor's ID
+      products: cartItems.map(item => ({
+        product: item.id,
+        quantity: item.quantity,
+        priceAtPurchase: item.price,
+      })),
+      subtotal: cartSubtotal,
+      shippingCost: estimatedDeliveryCost,
+      marketplaceCommission: marketplaceCommission,
+      logisticsServiceFee: logisticsServiceFee,
+      total: grandTotal,
+      status: "PENDING",
+      paymentStatus: "PENDING",
+      shippingAddress: { // Mocked shipping address
+        street: "123 Sahel Street",
+        city: "Bamako",
+        state: "Bamako Capital District",
+        zip: "00000",
+        country: "Mali",
+      },
+      paymentProvider: "COD", // Default to Cash On Delivery for now
+      // deliveryInstructions: "", // Optional
+    };
+
+    try {
+      const response = await fetch('/api/payload/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Failed to create order. Status: ${response.status}`);
+      }
+
+      const newOrder = await response.json();
+      
+      toast({
+        title: "Order Placed Successfully!",
+        description: `Your order #${newOrder.doc.id.substring(0,8)} has been placed.`,
+      });
+      clearCart();
+      router.push(`/order-confirmation?orderId=${newOrder.doc.id}`);
+
+    } catch (error: any) {
+      console.error("Order placement error:", error);
+      toast({
+        title: "Order Placement Failed",
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (cartItems.length === 0 && !isLoading) {
@@ -73,58 +141,41 @@ export default function CheckoutPage() {
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2 space-y-6">
-          {/* Shipping Information Card - Placeholder */}
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="font-headline text-xl flex items-center">
-                <Truck className="mr-2 h-6 w-6 text-primary" /> Shipping Information
+                <Truck className="mr-2 h-6 w-6 text-primary" /> Shipping Information (Mocked)
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {/* This would typically be a form or display of selected address */}
               <p className="text-muted-foreground">Address: 123 Sahel Street, Bamako, Mali</p>
               <p className="text-muted-foreground">Contact: +223 12 34 56 78</p>
-              <Button variant="outline" size="sm" className="mt-2">Change Address</Button>
+              <Button variant="outline" size="sm" className="mt-2" disabled>Change Address (Disabled)</Button>
             </CardContent>
           </Card>
 
-          {/* Payment Method Card */}
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="font-headline text-xl flex items-center">
-                <CreditCard className="mr-2 h-6 w-6 text-primary" /> Payment Method
+                <CreditCard className="mr-2 h-6 w-6 text-primary" /> Payment Method (Mocked)
               </CardTitle>
-              <CardDescription>Enter your payment details below. All transactions are secure.</CardDescription>
+              <CardDescription>Payment will be Cash on Delivery (COD). Full payment options coming soon.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="cardNumber">Card Number</Label>
-                <Input id="cardNumber" placeholder="•••• •••• •••• ••••" className="mt-1" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="expiryDate">Expiry Date</Label>
-                  <Input id="expiryDate" placeholder="MM/YY" className="mt-1" />
-                </div>
-                <div>
-                  <Label htmlFor="cvc">CVC</Label>
-                  <Input id="cvc" placeholder="•••" className="mt-1" />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="cardName">Name on Card</Label>
-                <Input id="cardName" placeholder="Full Name" className="mt-1" />
-              </div>
+              <p className="text-lg font-semibold text-primary">Selected: Cash on Delivery</p>
+              <p className="text-sm text-muted-foreground">
+                Please prepare ₦{grandTotal.toFixed(2)} for payment upon delivery.
+                Online payment options will be available in a future update.
+              </p>
             </CardContent>
              <CardFooter>
                 <p className="text-xs text-muted-foreground flex items-center">
-                    <Lock className="mr-1 h-3 w-3 text-green-600" /> Your payment information is encrypted and secure.
+                    <Lock className="mr-1 h-3 w-3 text-green-600" /> Transactions are secure.
                 </p>
              </CardFooter>
           </Card>
         </div>
 
-        {/* Order Summary Card */}
         <div className="lg:col-span-1">
           <Card className="shadow-lg sticky top-20">
             <CardHeader>
@@ -146,8 +197,8 @@ export default function CheckoutPage() {
                 <span>₦{cartSubtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Shipping ({mockSelectedDelivery.name})</span>
-                <span>₦{deliveryCost.toFixed(2)}</span>
+                <span className="text-muted-foreground">Shipping (Est. Fixed)</span>
+                <span>₦{estimatedDeliveryCost.toFixed(2)}</span>
               </div>
                <div className="flex justify-between">
                 <span className="text-muted-foreground">Marketplace Commission (5%)</span>
@@ -171,22 +222,15 @@ export default function CheckoutPage() {
                 disabled={isLoading || cartItems.length === 0}
               >
                 {isLoading ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Processing...
-                  </>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 ) : (
-                  <>
-                    <CreditCard className="mr-2 h-5 w-5" /> Place Order (₦{grandTotal.toFixed(2)})
-                  </>
+                  <CreditCard className="mr-2 h-5 w-5" />
                 )}
+                {isLoading ? 'Processing...' : `Place Order (₦${grandTotal.toFixed(2)})`}
               </Button>
-              <Link href="/delivery-options" className="w-full">
+              <Link href="/cart" className="w-full">
                 <Button variant="outline" className="w-full" disabled={isLoading}>
-                  <ArrowLeft className="mr-2 h-4 w-4" /> Back to Delivery Options
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Back to Cart
                 </Button>
               </Link>
             </CardFooter>

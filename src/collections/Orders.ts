@@ -9,8 +9,7 @@ export const Orders: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: () => true,
-    // Add more granular access control as needed
+    create: () => true, // Allow creation for authenticated users or define specific logic
     // update: ({ req: { user } }) => user?.role === 'admin', // Example
     // delete: ({ req: { user } }) => user?.role === 'admin', // Example
   },
@@ -26,13 +25,13 @@ export const Orders: CollectionConfig = {
       }
     },
     {
-      name: "seller", // The vendor/supplier user
+      name: "seller", // The vendor/supplier
       type: "relationship",
-      relationTo: "users", // Assuming sellers are also users, or this could relate to 'vendors' if vendors have their own user accounts separate from general users.
+      relationTo: "vendors", // Changed: Relates to Vendors collection
       required: true,
       hasMany: false,
       admin: {
-        description: "The user who is selling the products (supplier/vendor)."
+        description: "The vendor who is selling the products."
       }
     },
     {
@@ -65,13 +64,13 @@ export const Orders: CollectionConfig = {
           required: true,
           admin: {
             description: "Price of the product per unit at the time of order.",
-            readOnly: true, // Typically set programmatically
+            // This should be set programmatically when order is created
           }
         }
       ],
     },
     {
-      name: "total",
+      name: "total", // Overall order total including items, shipping, fees etc.
       type: "number",
       required: true,
       min: 0,
@@ -80,17 +79,51 @@ export const Orders: CollectionConfig = {
       }
     },
     {
+      name: "subtotal", // Total of (priceAtPurchase * quantity) for all products
+      type: "number",
+      required: true,
+      admin: {
+        description: "Subtotal of all product line items."
+      }
+    },
+    {
+      name: "shippingCost",
+      type: "number",
+      defaultValue: 0,
+      admin: {
+        description: "Cost of shipping for this order."
+      }
+    },
+    {
+      name: "marketplaceCommission",
+      type: "number",
+      defaultValue: 0,
+      admin: {
+        description: "Commission for the marketplace platform."
+      }
+    },
+    {
+      name: "logisticsServiceFee",
+      type: "number",
+      defaultValue: 0,
+      admin: {
+        description: "Fee for logistics services."
+      }
+    },
+    {
       name: "status",
       type: "select",
       required: true,
       defaultValue: "PENDING",
       options: [
-        { label: "Pending", value: "PENDING" },
-        { label: "Payment Held in Escrow", value: "PAYMENT_ESCROWED" },
+        { label: "Pending", value: "PENDING" }, // Order placed, awaiting payment/processing
+        { label: "Processing", value: "PROCESSING" }, // Payment received, order being prepared
+        { label: "Payment Escrowed", value: "PAYMENT_ESCROWED" },
         { label: "Shipped", value: "SHIPPED" },
         { label: "Delivered", value: "DELIVERED" },
         { label: "Inspection Passed", value: "INSPECTION_PASSED" },
         { label: "Payment Released", value: "PAYMENT_RELEASED" },
+        { label: "Completed", value: "COMPLETED" }, // Order fulfilled and payment released
         { label: "Disputed", value: "DISPUTED" },
         { label: "Refunded", value: "REFUNDED" },
         { label: "Cancelled", value: "CANCELLED" },
@@ -106,6 +139,8 @@ export const Orders: CollectionConfig = {
       defaultValue: "PENDING",
       options: [
         { label: "Pending", value: "PENDING" },
+        { label: "Paid", value: "PAID"},
+        { label: "Failed", value: "FAILED"},
         { label: "Held in Escrow", value: "IN_ESCROW" },
         { label: "Released to Seller", value: "RELEASED" },
         { label: "Refunded to Buyer", value: "REFUNDED" },
@@ -122,7 +157,7 @@ export const Orders: CollectionConfig = {
         { name: "city", type: "text", required: true },
         { name: "state", type: "text", required: true },
         { name: "zip", type: "text", required: true },
-        { name: "country", type: "text", required: true, defaultValue: "Nigeria" } // Example default
+        { name: "country", type: "text", required: true, defaultValue: "Mali" } // Updated default
       ]
     },
     {
@@ -166,7 +201,7 @@ export const Orders: CollectionConfig = {
           type: "textarea",
           admin: {
             description: "Reason provided if the order is disputed by the buyer.",
-            condition: (data, siblingData) => siblingData.status === 'DISPUTED'
+            condition: (_data, siblingData) => siblingData.status === 'DISPUTED' // Corrected condition
           },
         },
       ],
@@ -174,17 +209,18 @@ export const Orders: CollectionConfig = {
     {
       name: "paymentProvider",
       type: "select",
-      defaultValue: "STRIPE", // Assuming Stripe is a primary option
+      // defaultValue: "STRIPE", // Removed default as payment method might not be known upfront
       options: [
         { label: "Stripe", value: "STRIPE" },
-        { label: "Paystack", value: "PAYSTACK" }, // Common in Nigeria
-        { label: "Flutterwave", value: "FLUTTERWAVE" }, // Common in Africa
+        { label: "Paystack", value: "PAYSTACK" },
+        { label: "Flutterwave", value: "FLUTTERWAVE" },
         { label: "Bank Transfer", value: "BANK_TRANSFER" },
+        { label: "Cash On Delivery", value: "COD"},
         { label: "Other", value: "OTHER" },
       ],
     },
     {
-      name: "paymentDetails", // Renamed from paymentMetadata for clarity
+      name: "paymentDetails",
       type: "group",
       label: "Payment Transaction Details",
       fields: [
@@ -211,10 +247,10 @@ export const Orders: CollectionConfig = {
         {
             name: "currency",
             type: "text",
-            defaultValue: "NGN"
+            defaultValue: "NGN" // Consider XOF for Mali
         },
         {
-          name: "providerMetadata", // Specific metadata from provider
+          name: "providerMetadata",
           type: "json",
           admin: {
             description: "Additional payment details from the provider (e.g., raw response).",
@@ -233,7 +269,7 @@ export const Orders: CollectionConfig = {
                 required: true,
             },
             {
-                name: "user", // User who added the note (admin, buyer, seller)
+                name: "user",
                 type: "relationship",
                 relationTo: "users"
             },

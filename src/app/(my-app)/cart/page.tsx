@@ -30,7 +30,8 @@ export default function CartPage() {
   }
 
   const cartTotal = getCartTotal();
-  const shippingCost = cartTotal > 0 ? 500 : 0; // Existing placeholder for shipping
+  // Shipping cost might be determined later or based on selected options. For now, it's a placeholder.
+  const shippingCost = cartTotal > 0 ? 500 : 0; 
   const marketplaceCommissionRate = 0.05; // 5%
   const logisticsServiceFeeRate = 0.08; // 8%
 
@@ -77,7 +78,7 @@ export default function CartPage() {
                 <span>₦{cartTotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Shipping (Estimate - will be confirmed next step)</span>
+                <span className="text-muted-foreground">Shipping (Estimate)</span>
                 <span>₦{shippingCost.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
@@ -95,9 +96,10 @@ export default function CartPage() {
               </div>
             </CardContent>
             <CardFooter className="flex-col gap-2">
-              <Link href="/delivery-options" className="w-full">
+              {/* Updated Link: Directly to checkout, bypassing delivery-options */}
+              <Link href="/checkout" className="w-full">
                 <Button className="w-full text-lg py-6" size="lg">
-                  Choose Delivery Options <ArrowRight className="ml-2 h-5 w-5" />
+                  Proceed to Checkout <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link href="/marketplace" className="w-full">

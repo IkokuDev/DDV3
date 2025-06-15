@@ -1,7 +1,7 @@
 
 "use client";
 
-import type { Product, CartItem, PayloadMedia } from '@/lib/types'; // Import PayloadMedia
+import type { Product, CartItem } from '@/lib/types';
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -49,6 +49,21 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const imageUrl = (typeof firstImage === 'object' && firstImage?.url) ? firstImage.url : undefined;
     const imageAiHint = (typeof firstImage === 'object' && firstImage?.alt) ? firstImage.alt : product.name;
 
+    let vendorIdToAdd: string;
+    if (typeof product.vendor === 'object' && product.vendor.id) {
+      vendorIdToAdd = product.vendor.id;
+    } else if (typeof product.vendor === 'string') {
+      vendorIdToAdd = product.vendor; // Assume it's already an ID string
+    } else {
+      console.error("Vendor ID is missing or invalid for product:", product.name);
+      toast({
+        title: "Error adding item",
+        description: `Could not determine vendor for ${product.name}. Item not added.`,
+        variant: "destructive",
+      });
+      return; // Do not add item if vendorId is indeterminable
+    }
+
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
       if (existingItem) {
@@ -62,9 +77,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           id: product.id,
           name: product.name,
           price: product.price,
-          imageUrl: imageUrl || `https://placehold.co/100x100.png?text=${encodeURIComponent(product.name[0])}`,
+          imageUrl: imageUrl || `https://placehold.co/100x100.png?text=${encodeURIComponent(product.name?.[0] || 'P')}`,
           imageAiHint: imageAiHint,
-          quantity
+          quantity,
+          vendorId: vendorIdToAdd,
         }];
       }
     });
