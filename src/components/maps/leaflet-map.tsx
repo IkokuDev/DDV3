@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import type LType from 'leaflet';
 import { cn } from "@/lib/utils";
@@ -39,10 +39,11 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
   center,
   zoom = 13,
   markers = [],
-  style = defaultMapStyle, // Use the stable default style
+  style = defaultMapStyle,
   className,
 }) => {
   const [L, setL] = useState<typeof LType | null>(null);
+  const mapRef = useRef<LType.Map | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && (window as any).L) {
@@ -65,45 +66,60 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
     }
   }, []);
 
+  useEffect(() => {
+    // Cleanup function to remove the map instance
+    return () => {
+      if (mapRef.current && mapRef.current.getContainer()) {
+        // Check if the map container still exists before removing
+        mapRef.current.remove();
+        mapRef.current = null; // Clear the ref
+      }
+    };
+  }, []); // Empty dependency array ensures this runs on unmount
+
   if (!L) {
     return (
       <div
-        style={style} // Use the potentially passed style or the stable default
-        className={cn(className, "flex items-center justify-center bg-muted")}
+        style={style}
+        className={cn("leaflet-map-wrapper flex items-center justify-center bg-muted", className)}
       >
-        <p>Map library (L) not available...</p>
+        <p>Loading map library...</p>
       </div>
     );
   }
 
   return (
     <div style={style} className={cn("leaflet-map-wrapper", className)}>
-      {/* Ensure L is available before rendering MapContainer as an extra precaution, though the above check should suffice */}
-      {L && (
-        <MapContainer center={center} zoom={zoom} style={{ height: "100%", width: "100%" }} >
-          <ChangeView center={center} zoom={zoom} />
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          {markers.map((marker, index) => {
-            let customIcon: LType.Icon | undefined;
-            if (marker.iconUrl && marker.iconSize && L) {
-              customIcon = new L.Icon({
-                iconUrl: marker.iconUrl,
-                iconSize: marker.iconSize,
-                iconAnchor: [marker.iconSize[0] / 2, marker.iconSize[1]],
-                popupAnchor: [0, -marker.iconSize[1]]
-              });
-            }
-            return (
-              <Marker key={index} position={marker.position} icon={customIcon || new L.Icon.Default()}>
-                {marker.popupContent && <Popup>{marker.popupContent}</Popup>}
-              </Marker>
-            );
-          })}
-        </MapContainer>
-      )}
+      <MapContainer
+        center={center}
+        zoom={zoom}
+        style={{ height: "100%", width: "100%" }}
+        whenCreated={(instance) => {
+          mapRef.current = instance;
+        }}
+      >
+        <ChangeView center={center} zoom={zoom} />
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {markers.map((marker, index) => {
+          let customIcon: LType.Icon | undefined;
+          if (marker.iconUrl && marker.iconSize && L) {
+            customIcon = new L.Icon({
+              iconUrl: marker.iconUrl,
+              iconSize: marker.iconSize,
+              iconAnchor: [marker.iconSize[0] / 2, marker.iconSize[1]],
+              popupAnchor: [0, -marker.iconSize[1]]
+            });
+          }
+          return (
+            <Marker key={index} position={marker.position} icon={customIcon || new L.Icon.Default()}>
+              {marker.popupContent && <Popup>{marker.popupContent}</Popup>}
+            </Marker>
+          );
+        })}
+      </MapContainer>
     </div>
   );
 };
