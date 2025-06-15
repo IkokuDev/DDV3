@@ -62,7 +62,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       }
       setL(LInstance);
     } else if (typeof window !== 'undefined') {
-      console.error("Leaflet 'L' object not found on window. Ensure 'react-leaflet' and 'leaflet' are correctly installed and loaded.");
+      console.error("Leaflet 'L' object not found on window. Ensure 'react-leaflet' and 'leaflet' are correctly installed and loaded, or that leaflet.css is properly linked if using CDN for core Leaflet JS too.");
     }
   }, []);
 
@@ -70,12 +70,18 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
     // Cleanup function to remove the map instance
     return () => {
       if (mapRef.current) {
-        // Check if the map container still exists and if the map instance is valid
-        // map.off() removes all event listeners from the map
-        mapRef.current.off();
-        // map.remove() removes the map from the DOM and invalidates its container
-        mapRef.current.remove();
+        const mapInstance = mapRef.current;
+        // Get the container before removing the map, as getContainer might not work after remove()
+        const container = mapInstance.getContainer(); 
+        
+        mapInstance.off(); // Remove all event listeners from the map
+        mapInstance.remove(); // Remove the map from the DOM and invalidate its container
         mapRef.current = null; // Clear the ref
+
+        // After removing, explicitly try to clear Leaflet's internal ID from the container
+        if (container && (container as any)._leaflet_id) {
+          (container as any)._leaflet_id = null;
+        }
       }
     };
   }, []); // Empty dependency array ensures this runs on unmount
@@ -86,7 +92,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
         style={style}
         className={cn("leaflet-map-wrapper flex items-center justify-center bg-muted", className)}
       >
-        <p>Loading map library...</p>
+        <p>Loading map library (L)...</p>
       </div>
     );
   }
