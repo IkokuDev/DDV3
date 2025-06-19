@@ -6,8 +6,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
 ) {
+  const context: { params: { id: string } } = request.nextUrl.searchParams as any; // Access context through request.nextUrl
   try {
     const payload = await getPayload({ config: configPromise });
     const { searchParams } = new URL(request.url);
