@@ -1,4 +1,3 @@
-
 // src/app/(payload)/api/payload/products/[id]/route.ts
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';
@@ -6,13 +5,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
+  context: { params: { id: string } }
 ) {
-  const context: { params: { id: string } } = request.nextUrl.searchParams as any; // Access context through request.nextUrl
+  const { id } = context.params; // Get id from context.params
   try {
     const payload = await getPayload({ config: configPromise });
     const { searchParams } = new URL(request.url);
     const depth = parseInt(searchParams.get('depth') || '0', 10);
-    const id = context.params.id;
 
     const product = await payload.findByID({
       collection: 'products',
@@ -21,12 +20,20 @@ export async function GET(
     });
 
     if (!product) {
-      return NextResponse.json({ message: "Product not found" }, { status: 404 });
+      return NextResponse.json({ message: `Product with ID ${id} not found` }, { status: 404 });
     }
 
     return NextResponse.json(product);
   } catch (error: any) {
-    console.error(`Error in /api/payload/products/${context.params.id} GET:`, error);
-    return NextResponse.json({ error: error.message || "Failed to fetch product" }, { status: 500 });
+    console.error(`------------------------------------------------------`);
+    console.error(`Error in GET /api/payload/products/${id}:`);
+    console.error("Message:", error.message);
+    console.error("Stack:", error.stack);
+    if (error.cause) {
+      console.error("Cause:", error.cause);
+    }
+    console.error("Full Error Object:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+    console.error(`------------------------------------------------------`);
+    return NextResponse.json({ error: `Failed to fetch product with ID ${id}. Check server logs.` }, { status: 500 });
   }
 }
