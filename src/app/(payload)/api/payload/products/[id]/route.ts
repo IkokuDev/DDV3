@@ -6,9 +6,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { [key: string]: string | string[] } }
 ) {
-  const { id } = params;
+  const id = params.id as string; // Explicitly cast id to string
   console.log(`Attempting to handle GET /api/payload/products/${id}`);
   try {
     console.log(`Attempting to get Payload instance for /api/payload/products/${id}...`);
